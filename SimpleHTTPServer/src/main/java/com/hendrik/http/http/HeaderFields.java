@@ -42,10 +42,37 @@ public class HeaderFields{
         NOTIMPLEMENTED,
 
         /**
+         * The precondition for this request failed
+         */
+        PRECONDITION_FAILED,
+
+        /**
          * The server had an internal error
          */
         INTERNALERROR
     };
+
+    /**
+     * Get the string representation for the status code
+     * 
+     * @return The string representation for the status code
+     */
+    public static String toString(final StatusCode statusCode) {
+        
+        switch(statusCode) {
+            case OK:
+                return "200 OK";
+            case NOTFOUND:
+                return "404 Not Found";
+            case PRECONDITION_FAILED:
+                return "413 Precondition Failed";
+            case INTERNALERROR:
+                return "500 Internal Server Error";
+            default:
+                return "501 Not Implemented";
+
+        }
+    }
 
     /**
      * This enum represents the Header fields that are currently supported by this server
@@ -70,7 +97,27 @@ public class HeaderFields{
         /**
          * The data and time that the message was sent
          */
-        DATE
+        DATE,
+
+        /**
+         * The request or responses entitiy tag
+         */
+        ENTITIY_TAG,
+
+        /**
+         * Header field used for If-Match ETag behaviour
+         */
+        IF_MATCH,
+
+        /**
+         * Header field used for If-Non-Match ETag behaviour
+         */
+        // IF_NONE_MATCH,
+
+        /**
+         * Header field used for If-Modified-Since ETag behaviour
+         */
+        // IF_MODIFIED_SINCE
 
     };
 
@@ -90,6 +137,10 @@ public class HeaderFields{
                 return "Server";
             case DATE:
                 return "Date";
+            case ENTITIY_TAG:
+                return "ETag";
+            case IF_MATCH:
+                return "If-Match";
             default:
                 return null;
         }
@@ -97,14 +148,18 @@ public class HeaderFields{
 
     public static Field getFieldForString(final String fieldString) {
 
-        if (fieldString.toLowerCase().equals(toString(Field.CONTENT_TYPE))) {
+        if (fieldString.toLowerCase().equals(toString(Field.CONTENT_TYPE).toLowerCase())) {
             return Field.CONTENT_TYPE;
-        } else if (fieldString.toLowerCase().equals(toString(Field.CONTENT_LENGTH))) {
+        } else if (fieldString.toLowerCase().equals(toString(Field.CONTENT_LENGTH).toLowerCase())) {
             return Field.CONTENT_LENGTH;
-        } else if (fieldString.toLowerCase().equals(toString(Field.SERVER))) {
+        } else if (fieldString.toLowerCase().equals(toString(Field.SERVER).toLowerCase())) {
             return Field.SERVER;
-        } else if (fieldString.toLowerCase().equals(toString(Field.DATE))) {
+        } else if (fieldString.toLowerCase().equals(toString(Field.DATE).toLowerCase())) {
             return Field.DATE;
+        } else if (fieldString.toLowerCase().equals(toString(Field.ENTITIY_TAG).toLowerCase())) {
+            return Field.ENTITIY_TAG;
+        } else if (fieldString.toLowerCase().equals(toString(Field.IF_MATCH).toLowerCase())) {
+            return Field.IF_MATCH;
         }
         
         return null;

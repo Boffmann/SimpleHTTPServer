@@ -17,10 +17,10 @@ public class Header {
     /**
      * All header lines
      */
-    private Map<HeaderFields.Field, String> headerEntries;
+    private Map<HeaderFields.Field, List<String>> headerEntries;
 
     public Header() {
-        this.headerEntries = new HashMap<HeaderFields.Field, String>();
+        this.headerEntries = new HashMap<HeaderFields.Field, List<String>>();
     }
 
     /**
@@ -33,7 +33,16 @@ public class Header {
 
         if (field != null) {
 
-            this.headerEntries.put(field, value);
+            if (this.headerEntries.containsKey(field)) {
+                List<String> currentEntries = this.headerEntries.get(field);
+                currentEntries.add(value);
+                this.headerEntries.put(field, currentEntries);
+            } else {
+                List<String> newEntryList = new ArrayList<String>();
+                newEntryList.add(value);
+                this.headerEntries.put(field, newEntryList);
+            }
+
         }
     }
 
@@ -54,22 +63,42 @@ public class Header {
         }
 
         HeaderFields.Field field = HeaderFields.getFieldForString(keyValue[0]);
-
         if (field == null) {
             return false;
         }
 
-        this.headerEntries.put(field, keyValue[1]);
+        List<String> newEntryList = new ArrayList<String>();
+        String[] valueList = keyValue[1].split(",");
+
+        for (String value : valueList) {
+            newEntryList.add(value);
+        }
+
+        this.headerEntries.put(field, newEntryList);
         return true;
     }
     
     /**
-     * Get the value for a specific header entry
+     * Get the first value for a specific header field
      * 
      * @param field The header entry to get the value for
-     * @return An optional containing the value for the requested field. Empty if field not set in header
+     * @return An optional containing the first value for the requested field. Empty if field not set in header
      */
     public Optional<String> getValue(final HeaderFields.Field field) {
+        if (!this.headerEntries.containsKey(field)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(this.headerEntries.get(field).get(0));
+    }
+
+    /**
+     * Get all values for a specific header field
+     * 
+     * @param field The header entry to get the values for
+     * @return An optional containing all values for the requested field. Empty if field not set in header
+     */
+    public Optional<List<String>> getValues(final HeaderFields.Field field) {
         if (!this.headerEntries.containsKey(field)) {
             return Optional.empty();
         }
@@ -84,16 +113,18 @@ public class Header {
      * @return The header line in an optional. Empty if field not set in header
      */
     public Optional<String> getLine(final HeaderFields.Field field) {
-        Optional<String> value = getValue(field);
+        Optional<List<String>> values = getValues(field);
 
-        if (!value.isPresent()) {
+        if (!values.isPresent()) {
             return Optional.empty();
         }
+
+        String flattenedLine = String.join(",", values.get());
 
         StringBuilder entryBuilder = new StringBuilder()
             .append(HeaderFields.toString(field))
             .append(": ")
-            .append(value.get());
+            .append(flattenedLine);
 
         return Optional.of(entryBuilder.toString());
     }
@@ -106,7 +137,7 @@ public class Header {
     public List<String> getLines() {
         List<String> result = new ArrayList<String>();
 
-        for (Map.Entry<HeaderFields.Field, String> entry : this.headerEntries.entrySet()) {
+        for (Map.Entry<HeaderFields.Field, List<String>> entry : this.headerEntries.entrySet()) {
             result.add(getLine(entry.getKey()).get());
         }
 

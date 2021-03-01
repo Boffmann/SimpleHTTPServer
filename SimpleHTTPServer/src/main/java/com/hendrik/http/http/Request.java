@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Class representing a HTTP request
@@ -109,6 +111,26 @@ public class Request {
      */
     public String getURI() {
         return this.uri;
+    }
+
+    /**
+     * Getter to aquire the header line for a specific header field
+     * 
+     * @param headerField The header field of which the line should be taken
+     * @return An optional containing the header line for the inquired field. Empty if the header contains no entry for the requested field
+     */
+    public Optional<String> getHeaderLine(final HeaderFields.Field headerField) {
+        return this.header.getLine(headerField);
+    }
+
+    /**
+     * Returns a list of all values present for a specific header field
+     * 
+     * @param headerField The header field of which the entries should be taken
+     * @return An optional containing all entries for the specified header field
+     */
+    public Optional<List<String>> getHeaderValues(final HeaderFields.Field headerField) {
+        return this.header.getValues(headerField);
     }
 
 }

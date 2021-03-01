@@ -88,7 +88,8 @@ public class DirectoryResource extends Resource {
             .append(HTTPServer.NEW_LINE)
             .append("</body>")
             .append(HTTPServer.NEW_LINE)
-            .append("</html>");
+            .append("</html>")
+            .append(HTTPServer.NEW_LINE);
 
         return stringBuilder.toString();
     }

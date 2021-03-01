@@ -38,14 +38,14 @@ public class Response {
             switch (request.getMethod()) {
                 case GET:
                     if (!requestedResource.exists()) {
-                        return new Response(StatusCode.NOTFOUND, header, "".getBytes());
+                        return new Response(StatusCode.NOTFOUND, header, "404 File not Found".getBytes());
                     } else {
                         header.addLine("Content-Type", requestedResource.getContentType());
                         return new Response(StatusCode.OK, header, requestedResource.getData());
                     }
                 case HEAD:
                     if (!requestedResource.exists()) {
-                        return new Response(StatusCode.NOTFOUND, header, "".getBytes());
+                        return new Response(StatusCode.NOTFOUND, header, "404 File not Found".getBytes());
                     } else {
                         header.addLine("Content-Type", requestedResource.getContentType());
                         return new Response(StatusCode.OK, header, "".getBytes());

@@ -1,46 +1,83 @@
 package com.hendrik.http.http;
 
-/**
- * This enum specifies the supported HTTP Methods allowed in the Request
- */
-enum RequestMethod {
-    /**
-     * Represents an HTTP GET request
-     */
-    GET,
+public class HeaderFields{
 
     /**
-     * Represents an HTTP HEAD request
+     * This enum specifies the supported HTTP Methods allowed in the Request
      */
-    HEAD,
+    public enum RequestMethod {
+        /**
+         * Represents an HTTP GET request
+         */
+        GET,
+
+        /**
+         * Represents an HTTP HEAD request
+         */
+        HEAD,
+
+        /**
+         * Represents that the desired HTTP Method type is not supported by the server
+         */
+        UNSUPPORTED
+    };
 
     /**
-     * Represents that the desired HTTP Method type is not supported by the server
+     * This enum specifies the Response's status code
      */
-    UNSUPPORTED
-};
+    public enum StatusCode {
+        /**
+         * The request was successful
+         */
+        OK,
 
-/**
- * This enum specifies the Response's status code
- */
-enum StatusCode {
-    /**
-     * The request was successful
-     */
-    OK,
+        /**
+         * The server has not found the requested resource
+         */
+        NOTFOUND,
+
+        /**
+         * The server does not support the functionality to fulfill the request
+         */
+        NOTIMPLEMENTED,
+
+        /**
+         * The server had an internal error
+         */
+        INTERNALERROR
+    };
 
     /**
-     * The server has not found the requested resource
+     * This enum represents the Header fields that are currently supported by this server
      */
-    NOTFOUND,
+    public enum Field {
+
+        CONTENT_TYPE
+
+    };
 
     /**
-     * The server does not support the functionality to fulfill the request
+     * Gets the header string representation for a supported field
+     * 
+     * @param field The field to get the string representation of
+     * @return The string representing the header field
      */
-    NOTIMPLEMENTED,
+    public static String toString(final Field field) {
+        switch (field) {
+            case CONTENT_TYPE:
+                return "Content-Type";
+            default:
+                return null;
+        }
+    }
 
-    /**
-     * The server had an internal error
-     */
-    INTERNALERROR
-};
+    public static Field getFieldForString(final String fieldString) {
+
+        if (fieldString.toLowerCase().equals(toString(Field.CONTENT_TYPE))) {
+            return Field.CONTENT_TYPE;
+        }
+        
+        return null;
+    }
+
+}

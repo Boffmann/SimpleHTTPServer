@@ -2,7 +2,6 @@ package com.hendrik.http;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.management.InvalidAttributeValueException;
 
@@ -127,7 +126,7 @@ public class ResourceTest {
             Assertions.assertArrayEquals(rootHTML.getData(), rootResource.getData());
 
             Resource notExisting = Resource.createFromPath("/afeafeda/faef");
-            Assertions.assertArrayEquals("404 - File not Found".getBytes(), notExisting.getData());
+            Assertions.assertArrayEquals("".getBytes(), notExisting.getData());
         } catch (IOException ex) {
             // Should not happen
             Assertions.assertTrue(false);

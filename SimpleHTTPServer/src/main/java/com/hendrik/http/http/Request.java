@@ -15,7 +15,7 @@ public class Request {
     /**
      * Represents to which method this header belongs
      */
-    private RequestMethod method;
+    private HeaderFields.RequestMethod method;
 
     /**
      * The request's URI
@@ -33,12 +33,21 @@ public class Request {
     private Header header;
 
     /**
-     * Create a new Request by parsing the TCP input stream
+     * Create a new Request by parsing the TCP input stream.
+     * It assumes that the input Stream is either null or at least contains a valid request line
      * 
      * @param inputStream The input stream to parse
      * @throws IOException An I/O error happened while parsing the stream
      */
     public Request(final InputStream inputStream) throws IOException {
+
+        if (inputStream == null) {
+            System.out.println("Request created from empty input Stream");
+            this.method = HeaderFields.RequestMethod.UNSUPPORTED;
+            this.uri = "";
+            this.httpVersion = "";
+            return;
+        }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String statusLine = reader.readLine();
@@ -46,11 +55,11 @@ public class Request {
         String[] splittedStatusLine = statusLine.split("\\s+");
 
         if (splittedStatusLine[0].toUpperCase().equals("GET")) {
-            this.method = RequestMethod.GET;
+            this.method = HeaderFields.RequestMethod.GET;
         } else if (splittedStatusLine[0].toUpperCase().equals("HEAD")) {
-            this.method = RequestMethod.HEAD;
+            this.method = HeaderFields.RequestMethod.HEAD;
         } else {
-            this.method = RequestMethod.UNSUPPORTED;
+            this.method = HeaderFields.RequestMethod.UNSUPPORTED;
         }
 
         this.uri = splittedStatusLine[1];
@@ -59,8 +68,11 @@ public class Request {
         this.header = new Header();
 
         String line;
-        while ( !((line = reader.readLine()).equals(""))) {
-            this.header.addLine(line);
+        while ( (line = reader.readLine()) != null) {
+            if (line.equals("")) {
+                break;
+            }
+            this.header.addEntryWhenSupported(line);
         }
     }
 
@@ -78,7 +90,7 @@ public class Request {
      * 
      * @return The HTTP method for this request
      */
-    public RequestMethod getMethod() {
+    public HeaderFields.RequestMethod getMethod() {
         return this.method;
     }
 

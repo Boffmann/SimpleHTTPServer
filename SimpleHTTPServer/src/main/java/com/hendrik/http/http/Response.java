@@ -3,14 +3,16 @@ package com.hendrik.http.http;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import com.hendrik.http.http.HeaderFields.Field;
 import com.hendrik.http.http.resource.Resource;
 
 public class Response {
 
     private final static String VERSION = "HTTP/1.1";
 
-    private StatusCode statusCode;
+    private HeaderFields.StatusCode statusCode;
 
     /**
      * The header of this response
@@ -38,25 +40,27 @@ public class Response {
             switch (request.getMethod()) {
                 case GET:
                     if (!requestedResource.exists()) {
-                        return new Response(StatusCode.NOTFOUND, header, "404 File not Found".getBytes());
+                        header.addEntry(Field.CONTENT_TYPE, "text/plain");
+                        return new Response(HeaderFields.StatusCode.NOTFOUND, header, "404 - File Not Found".getBytes());
                     } else {
-                        header.addLine("Content-Type", requestedResource.getContentType());
-                        return new Response(StatusCode.OK, header, requestedResource.getData());
+                        header.addEntry(Field.CONTENT_TYPE, requestedResource.getContentType());
+                        return new Response(HeaderFields.StatusCode.OK, header, requestedResource.getData());
                     }
                 case HEAD:
                     if (!requestedResource.exists()) {
-                        return new Response(StatusCode.NOTFOUND, header, "404 File not Found".getBytes());
+                        header.addEntry(Field.CONTENT_TYPE, "text/plain");
+                        return new Response(HeaderFields.StatusCode.NOTFOUND, header, "404 - File Not Found".getBytes());
                     } else {
-                        header.addLine("Content-Type", requestedResource.getContentType());
-                        return new Response(StatusCode.OK, header, "".getBytes());
+                        header.addEntry(Field.CONTENT_TYPE, requestedResource.getContentType());
+                        return new Response(HeaderFields.StatusCode.OK, header, "".getBytes());
                     }
                 default:
-                    header.addLine("Content-Type", "text/plain");
-                    return new Response(StatusCode.NOTIMPLEMENTED, header, "The requested behaviour is not implemented".getBytes());
+                    header.addEntry(Field.CONTENT_TYPE, "text/plain");
+                    return new Response(HeaderFields.StatusCode.NOTIMPLEMENTED, header, "The requested behaviour is not implemented".getBytes());
             }
         } catch (IOException ex) {
-            header.addLine("Content-Type", "text/plain");
-            return new Response(StatusCode.INTERNALERROR, header, "Error while getting the requested resources data".getBytes());
+            header.addEntry(Field.CONTENT_TYPE, "text/plain");
+            return new Response(HeaderFields.StatusCode.INTERNALERROR, header, "Error while getting the requested resources data".getBytes());
         }
     }
 
@@ -68,7 +72,7 @@ public class Response {
      * @param header The header for this HTTP response
      * @param body The body of this HTTP response
      */
-    private Response(final StatusCode statusCode, final Header header, final byte[] body) {
+    private Response(final HeaderFields.StatusCode statusCode, final Header header, final byte[] body) {
         this.statusCode = statusCode;
         this.header = header;
         this.body = body;
@@ -119,8 +123,12 @@ public class Response {
 
     }
 
-    public byte[] getMessage() {
+    public byte[] getData() {
         return this.body;
+    }
+
+    public Optional<String> getHeaderValue(final HeaderFields.Field headerField) {
+        return this.header.getLine(headerField);
     }
 
 }

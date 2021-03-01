@@ -33,7 +33,7 @@ public class FileResource extends Resource {
     public byte[] getData() throws IOException {
 
         if (!this.exists()) {
-            return "404 - File not Found".getBytes();
+            return "".getBytes();
         }
 
 		InputStream in = new FileInputStream(this.handle);

@@ -73,19 +73,9 @@ public class ConnectionThread extends Thread {
                 outputStream.writeBytes("\r\n");
             }
             outputStream.writeBytes("\r\n");
-            outputStream.write(response.getMessage());
+            outputStream.write(response.getData());
             outputStream.flush();
             outputStream.close();
-
-            // try {
-            //     Request request = new Request(input);
-            //     Response response = new Response(request);
-            //     response.writeToStream(output);
-            // } catch (IllegalArgumentException ex) {
-            //     answerBadRequest(output);
-            //     closeSocket(clientSocket);
-            //     return;
-            // }
 
         } catch (IOException ex) {
             System.out.println("Server I/O exception while serving client: " + ex.getMessage());

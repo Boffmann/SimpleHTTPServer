@@ -107,6 +107,10 @@ public class RequestResponseTest {
         Response getFileResponse = Response.createForRequest(getFileRequest);
         Assertions.assertTrue(getFileResponse.getHeaderValue(HeaderFields.Field.CONTENT_TYPE).isPresent());
         Assertions.assertEquals("Content-Type: text/plain", getFileResponse.getHeaderValue(HeaderFields.Field.CONTENT_TYPE).get());
+        Assertions.assertTrue(getFileResponse.getHeaderValue(HeaderFields.Field.CONTENT_LENGTH).isPresent());
+        Assertions.assertEquals("Content-Length: 10", getFileResponse.getHeaderValue(HeaderFields.Field.CONTENT_LENGTH).get());
+        Assertions.assertTrue(getFileResponse.getHeaderValue(HeaderFields.Field.SERVER).isPresent());
+        Assertions.assertEquals("Server: " + HTTPServer.getServerInfo(), getFileResponse.getHeaderValue(HeaderFields.Field.SERVER).get());
         Assertions.assertArrayEquals("Subfolder\n".getBytes(), getFileResponse.getData());
 
         Response headResponse = Response.createForRequest(headRequest);

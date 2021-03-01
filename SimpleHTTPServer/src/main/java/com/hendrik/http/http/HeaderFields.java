@@ -52,7 +52,25 @@ public class HeaderFields{
      */
     public enum Field {
 
-        CONTENT_TYPE
+        /**
+         * The MIME type of the content
+         */
+        CONTENT_TYPE,
+
+        /**
+         * The number of bytes in the response body
+         */
+        CONTENT_LENGTH,
+
+        /**
+         * This server's name
+         */
+        SERVER,
+
+        /**
+         * The data and time that the message was sent
+         */
+        DATE
 
     };
 
@@ -66,6 +84,12 @@ public class HeaderFields{
         switch (field) {
             case CONTENT_TYPE:
                 return "Content-Type";
+            case CONTENT_LENGTH:
+                return "Content-Length";
+            case SERVER:
+                return "Server";
+            case DATE:
+                return "Date";
             default:
                 return null;
         }
@@ -75,6 +99,12 @@ public class HeaderFields{
 
         if (fieldString.toLowerCase().equals(toString(Field.CONTENT_TYPE))) {
             return Field.CONTENT_TYPE;
+        } else if (fieldString.toLowerCase().equals(toString(Field.CONTENT_LENGTH))) {
+            return Field.CONTENT_LENGTH;
+        } else if (fieldString.toLowerCase().equals(toString(Field.SERVER))) {
+            return Field.SERVER;
+        } else if (fieldString.toLowerCase().equals(toString(Field.DATE))) {
+            return Field.DATE;
         }
         
         return null;

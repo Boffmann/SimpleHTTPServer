@@ -70,8 +70,17 @@ public class HTTPServer {
      * 
      * @return The root directory from which to serve files
      */
-    public static String getRootDirectory() {
+    public static final String getRootDirectory() {
         return HTTPServer.rootDirectory;
+    }
+
+    /**
+     * Static getter for the server info used e.g. in Server: response header field
+     * 
+     * @return The server information
+     */
+    public static final String getServerInfo() {
+        return "My Simple HTTP Server 0.1";
     }
 
     /**

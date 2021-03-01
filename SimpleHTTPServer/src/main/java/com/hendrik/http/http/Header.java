@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Class representing HTTP Header
+ * This class is used as generic header for both requests and responses
+ * 
+ * @author Hendrik Tjabben
+ */
 public class Header {
 
     /**
@@ -57,6 +63,12 @@ public class Header {
         return true;
     }
     
+    /**
+     * Get the value for a specific header entry
+     * 
+     * @param field The header entry to get the value for
+     * @return An optional containing the value for the requested field. Empty if field not set in header
+     */
     public Optional<String> getValue(final HeaderFields.Field field) {
         if (!this.headerEntries.containsKey(field)) {
             return Optional.empty();
@@ -65,6 +77,12 @@ public class Header {
         return Optional.of(this.headerEntries.get(field));
     }
 
+    /**
+     * Get an entire header line containing of a field key and the value
+     * 
+     * @param field The field key to get the header line for
+     * @return The header line in an optional. Empty if field not set in header
+     */
     public Optional<String> getLine(final HeaderFields.Field field) {
         Optional<String> value = getValue(field);
 
@@ -80,6 +98,11 @@ public class Header {
         return Optional.of(entryBuilder.toString());
     }
 
+    /**
+     * Get all lines for this header
+     * 
+     * @return All lines that are set in this header
+     */
     public List<String> getLines() {
         List<String> result = new ArrayList<String>();
 

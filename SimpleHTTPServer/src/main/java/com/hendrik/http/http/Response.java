@@ -1,10 +1,15 @@
 package com.hendrik.http.http;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.hendrik.http.HTTPServer;
 import com.hendrik.http.http.HeaderFields.Field;
 import com.hendrik.http.http.resource.Resource;
 
@@ -76,6 +81,10 @@ public class Response {
         this.statusCode = statusCode;
         this.header = header;
         this.body = body;
+
+        this.header.addEntry(Field.CONTENT_LENGTH, String.valueOf(this.body.length));
+        this.header.addEntry(Field.SERVER, HTTPServer.getServerInfo());
+        this.header.addEntry(Field.DATE, DateTimeFormatter.RFC_1123_DATE_TIME.format(OffsetDateTime.now()));
     }
 
     private String createStatusLine() {

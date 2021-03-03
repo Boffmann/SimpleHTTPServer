@@ -1,5 +1,10 @@
 package com.hendrik.http.http;
 
+/**
+ * Class with convenience methods and enums for HTTP Header fields
+ * 
+ * @author Hendrik Tjabben
+ */
 public class HeaderFields{
 
     /**

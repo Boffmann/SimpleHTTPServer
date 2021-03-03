@@ -15,6 +15,13 @@ import com.hendrik.http.http.HeaderFields.RequestMethod;
 import com.hendrik.http.http.HeaderFields.StatusCode;
 import com.hendrik.http.http.resource.Resource;
 
+/**
+ * Class used for building HTTP Responses.
+ * Provides methods for including various different features into the response.
+ * Follows the builder pattern
+ * 
+ * @author Hendrik Tjabben
+ */
 public class ResponseBuilder {
 
     /**
@@ -26,16 +33,36 @@ public class ResponseBuilder {
      */
     private boolean isImmutable;
 
+    /**
+     * The desired status code for the final response
+     */
     private StatusCode statusCode;
-
+    
+    /**
+     * The desired header fields for the final response
+     */
     private Header header;
 
+    /**
+     * The desired body for the final response
+     */
     private byte[] body;
 
+    /**
+     * The request for which the response should be build
+     */
     private Request request;
 
+    /**
+     * The resource that should be delivered as payload for the final response
+     */
     private Resource resource;
 
+    /**
+     * Creates a new response builder, checks if the method type is supported and if the requested resource exists
+     * 
+     * @param request The request for which the response should be built
+     */
     public ResponseBuilder(final Request request) {
         this.request = request;
         this.resource = Resource.createFromPath(request.getURI());
@@ -57,6 +84,15 @@ public class ResponseBuilder {
         }
     }
 
+    /**
+     * Adds Etag informations to the response.
+     * 
+     * The currently supported etag functionalities are If-Match, If-Modified-Since, and If-None-Match
+     * 
+     * This implementation is based on https://tools.ietf.org/html/rfc2616#section-14.24
+     * 
+     * @return A response builder with set ETag information
+     */
     public ResponseBuilder setEtag() {
 
         if (this.isImmutable) {
@@ -65,16 +101,6 @@ public class ResponseBuilder {
 
         boolean shouldPerformIfModifiedSince = true;
 
-        /*
-        ETag description taken from https://tools.ietf.org/html/rfc2616#section-14.24
-        If any of the entity tags match the entity tag of the entity that
-        would have been returned in the response to a similar GET request
-        (without the If-Match header) on that resource, or if "*" is given
-        and any current entity exists for that resource, then the server MAY
-        perform the requested method as if the If-Match header field did not
-        exist.
-        // Having both If-Match and If-None-Match or If-Modified-Since is undefined behaviour
-        */
         Optional<List<String>> ifMatchEntries = request.getHeaderValues(Field.IF_MATCH);
         Optional<List<String>> ifNoneMatchEntries = request.getHeaderValues(Field.IF_NONE_MATCH);
         Optional<List<String>> ifModifiedSinceEntries = request.getHeaderValues(Field.IF_MODIFIED_SINCE);

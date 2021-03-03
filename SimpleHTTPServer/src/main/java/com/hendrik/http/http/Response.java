@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Class representing a HTTP Response message
+ * 
+ * @author Hendrik Tjabben
+ */
 public class Response {
 
     private final static String VERSION = "HTTP/1.1";

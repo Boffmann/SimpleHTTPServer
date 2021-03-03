@@ -1,16 +1,12 @@
 package com.hendrik.http;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 
-import javax.management.InvalidAttributeValueException;
-
-import com.hendrik.http.HTTPServer;
 import com.hendrik.http.http.HeaderFields;
 import com.hendrik.http.http.Request;
 import com.hendrik.http.http.Response;
-import com.hendrik.http.http.HeaderFields.Field;
+import com.hendrik.http.http.ResponseBuilder;
 import com.hendrik.http.http.resource.Resource;
 
 import org.junit.jupiter.api.Assertions;
@@ -18,17 +14,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class RequestResponseTest {
-
-    /**
-     * This HTTP Server is only used to set the root directory
-     */
-    private static HTTPServer server;
-
-    /**
-     * Path into the test directory
-     */
-    private static String testDirPath;
-
 
     private static Request getRootRequest;
     private static Request getFileRequest;
@@ -94,7 +79,7 @@ public class RequestResponseTest {
 
         Resource rootHTML = Resource.createFromPath("/Test1/root.html");
         
-        Response getResponse = Response.createForRequest(getRootRequest);
+        Response getResponse = new ResponseBuilder(getRootRequest).build();
         Assertions.assertTrue(getResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());
         Assertions.assertEquals("Content-Type: text/html", getResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).get());
 
@@ -105,7 +90,7 @@ public class RequestResponseTest {
             Assertions.assertTrue(false);
         }
 
-        Response getFileResponse = Response.createForRequest(getFileRequest);
+        Response getFileResponse = new ResponseBuilder(getFileRequest).build();
         Assertions.assertTrue(getFileResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());
         Assertions.assertEquals("Content-Type: text/plain", getFileResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).get());
         Assertions.assertTrue(getFileResponse.getHeaderLine(HeaderFields.Field.CONTENT_LENGTH).isPresent());
@@ -114,42 +99,30 @@ public class RequestResponseTest {
         Assertions.assertEquals("Server: " + HTTPServer.getServerInfo(), getFileResponse.getHeaderLine(HeaderFields.Field.SERVER).get());
         Assertions.assertArrayEquals("Subfolder\n".getBytes(), getFileResponse.getData());
 
-        Response headResponse = Response.createForRequest(headRequest);
+        Response headResponse = new ResponseBuilder(headRequest).build();
         Assertions.assertTrue(headResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());
         Assertions.assertEquals("Content-Type: text/html", headResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).get());
         Assertions.assertArrayEquals("".getBytes(), headResponse.getData());
 
-        Response headFileResponse = Response.createForRequest(headRequestFile);
+        Response headFileResponse = new ResponseBuilder(headRequestFile).build();
         Assertions.assertTrue(headFileResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());
         Assertions.assertEquals("Content-Type: text/plain", headFileResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).get());
         Assertions.assertArrayEquals("".getBytes(), headFileResponse.getData());
 
-        Response getNotPresentResponse = Response.createForRequest(getNotPresentRequest);
+        Response getNotPresentResponse = new ResponseBuilder(getNotPresentRequest).build();
         Assertions.assertTrue(getNotPresentResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());
         Assertions.assertEquals("Content-Type: text/plain", getNotPresentResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).get());
         Assertions.assertArrayEquals("404 Not Found".getBytes(), getNotPresentResponse.getData());
 
-        Response postResponse = Response.createForRequest(postRequest);
+        Response postResponse = new ResponseBuilder(postRequest).build();
         Assertions.assertTrue(postResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());
         Assertions.assertEquals("Content-Type: text/plain", postResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).get());
         Assertions.assertArrayEquals("501 Not Implemented".getBytes(), postResponse.getData());
 
-        Response nullResponse = Response.createForRequest(nullRequest);
+        Response nullResponse = new ResponseBuilder(nullRequest).build();
         Assertions.assertTrue(nullResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());
         Assertions.assertEquals("Content-Type: text/plain", nullResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).get());
         Assertions.assertArrayEquals("501 Not Implemented".getBytes(), nullResponse.getData());
     }
 
-    @Test
-    public void entitiyTagTest() {
-        try {
-            Request entitiyTagRequest;
-            entitiyTagRequest = new Request(new ByteArrayInputStream("GET / HTTP/1.1\nETag: 123456789".getBytes()));
-            Assertions.assertTrue(entitiyTagRequest.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
-            Assertions.assertEquals("ETag: 123456789", entitiyTagRequest.getHeaderLine(Field.ENTITIY_TAG).get());
-        } catch (IOException e) {
-            // Should not happen
-            Assertions.assertTrue(false);
-        }
-    }
 }

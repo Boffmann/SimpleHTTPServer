@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import com.hendrik.http.http.Request;
 import com.hendrik.http.http.Response;
+import com.hendrik.http.http.ResponseBuilder;
 
 /**
  * A Thread that allows to serve incoming HTTP GET and HEAD requests
@@ -66,7 +67,10 @@ public class ConnectionThread extends Thread {
             DataOutputStream outputStream = new DataOutputStream(output);
 
             Request request = new Request(input);
-            Response response = Response.createForRequest(request);
+            ResponseBuilder responseBuilder = new ResponseBuilder(request);
+            Response response = responseBuilder
+                .setEtag()
+                .build();
 
             for (String line : response.getHeaderLines()) {
                 outputStream.writeBytes(line);

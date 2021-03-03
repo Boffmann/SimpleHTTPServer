@@ -126,7 +126,7 @@ public class HeaderFields{
         /**
          * Header field used for If-Non-Match ETag behaviour
          */
-        // IF_NONE_MATCH,
+        IF_NONE_MATCH,
 
         /**
          * Header field used for If-Modified-Since ETag behaviour
@@ -155,6 +155,8 @@ public class HeaderFields{
                 return "ETag";
             case IF_MATCH:
                 return "If-Match";
+            case IF_NONE_MATCH:
+                return "If-None-Match";
             case IF_MODIFIED_SINCE:
                 return "If-Modified-Since";
             default:
@@ -176,6 +178,8 @@ public class HeaderFields{
             return Field.ENTITIY_TAG;
         } else if (fieldString.toLowerCase().equals(toString(Field.IF_MATCH).toLowerCase())) {
             return Field.IF_MATCH;
+        } else if (fieldString.toLowerCase().equals(toString(Field.IF_NONE_MATCH).toLowerCase())) {
+            return Field.IF_NONE_MATCH;
         } else if (fieldString.toLowerCase().equals(toString(Field.IF_MODIFIED_SINCE).toLowerCase())) {
             return Field.IF_MODIFIED_SINCE;
         }
@@ -191,7 +195,7 @@ public class HeaderFields{
      */
     public static boolean allowsMultipleValues(final Field field) {
 
-        if (field == Field.IF_MATCH) {
+        if (field == Field.IF_MATCH || field == Field.IF_NONE_MATCH) {
             return true;
         }
         

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 import com.hendrik.http.http.Request;
 import com.hendrik.http.http.Response;
@@ -37,7 +38,7 @@ public class ETagTest {
     public void testIfMatch() {
 
         try {
-            Request getRootRequestIfMatch = new Request(new ByteArrayInputStream("GET / HTTP/1.1\nETag: 533839800\nIf-Match: 533839800".getBytes()));
+            Request getRootRequestIfMatch = new Request(new ByteArrayInputStream("GET / HTTP/1.1\nETag: 533839800\nIf-Match: 533839805, 533839800".getBytes()));
             Request getRootRequestIfMatchStar = new Request(new ByteArrayInputStream("GET / HTTP/1.1\nETag: 533839800\nIf-Match: *".getBytes()));
             Request getRootRequestIfMatchStarResourceNotExisting = new Request(new ByteArrayInputStream("GET /kaudawelsch HTTP/1.1\nETag: 533839800\nIf-Match: *".getBytes()));
             Request getRootRequestIfMatchNotMatching = new Request(new ByteArrayInputStream("GET / HTTP/1.1\nETag: 533839800\nIf-Match: 533839801".getBytes()));
@@ -47,7 +48,6 @@ public class ETagTest {
             Response getRootResponseIfMatch = new ResponseBuilder(getRootRequestIfMatch).setEtag().build();
             Assertions.assertTrue(getRootResponseIfMatch.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
             Assertions.assertEquals("ETag: 533839800", getRootResponseIfMatch.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).get());
-
             Assertions.assertArrayEquals(rootHTML.getData(), getRootResponseIfMatch.getData());
 
             Response getRootResponseIfMatchStar = new ResponseBuilder(getRootRequestIfMatchStar).setEtag().build();
@@ -59,6 +59,44 @@ public class ETagTest {
             Assertions.assertTrue(getRootResponseIfMatchNotMatching.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
             Assertions.assertEquals("ETag: 533839800", getRootResponseIfMatchNotMatching.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).get());
             Assertions.assertArrayEquals("413 Precondition Failed".getBytes(), getRootResponseIfMatchNotMatching.getData());
+
+            Response getRootResponseIfMatchingStarNotExisting = new ResponseBuilder(getRootRequestIfMatchStarResourceNotExisting).setEtag().build();
+            Assertions.assertFalse(getRootResponseIfMatchingStarNotExisting.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
+            Assertions.assertArrayEquals("404 Not Found".getBytes(), getRootResponseIfMatchingStarNotExisting.getData());
+        } catch (IOException ex) {
+            // Should not happen
+            Assertions.assertTrue(false);
+        }
+
+    }
+    
+    @Test
+    public void testIfNoneMatch() {
+
+        try {
+            Request getRootRequestIfMatch = new Request(new ByteArrayInputStream("GET / HTTP/1.1\nETag: 533839800\nIf-None-Match: 533839800".getBytes()));
+            Request getRootRequestIfMatchStar = new Request(new ByteArrayInputStream("GET / HTTP/1.1\nETag: 533839800\nIf-None-Match: *".getBytes()));
+            Request getRootRequestIfMatchStarResourceNotExisting = new Request(new ByteArrayInputStream("GET /kaudawelsch HTTP/1.1\nETag: 533839800\nIf-None-Match: *".getBytes()));
+            Request getRootRequestIfMatchNotMatching = new Request(new ByteArrayInputStream("GET / HTTP/1.1\nETag: 533839800\nIf-None-Match: 533839801".getBytes()));
+
+
+            Resource rootHTML = Resource.createFromPath("/Test1/root.html");
+
+            Response getRootResponseIfMatch = new ResponseBuilder(getRootRequestIfMatch).setEtag().build();
+            Assertions.assertTrue(getRootResponseIfMatch.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
+            Assertions.assertEquals("ETag: 533839800", getRootResponseIfMatch.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).get());
+            Assertions.assertArrayEquals("304 Not Modified".getBytes(), getRootResponseIfMatch.getData());
+
+            Response getRootResponseIfMatchStar = new ResponseBuilder(getRootRequestIfMatchStar).setEtag().build();
+            Assertions.assertTrue(getRootResponseIfMatchStar.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
+            Assertions.assertEquals("ETag: 533839800", getRootResponseIfMatchStar.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).get());
+            Assertions.assertArrayEquals("304 Not Modified".getBytes(), getRootResponseIfMatchStar.getData());
+
+            Response getRootResponseIfMatchNotMatching = new ResponseBuilder(getRootRequestIfMatchNotMatching).setEtag().build();
+            Assertions.assertTrue(getRootResponseIfMatchNotMatching.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
+            Assertions.assertEquals("ETag: 533839800", getRootResponseIfMatchNotMatching.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).get());
+            Assertions.assertArrayEquals(rootHTML.getData(), getRootResponseIfMatchNotMatching.getData());
+            Assertions.assertFalse(Arrays.equals("304 Not Modified".getBytes(), getRootResponseIfMatchNotMatching.getData()));
 
             Response getRootResponseIfMatchingStarNotExisting = new ResponseBuilder(getRootRequestIfMatchStarResourceNotExisting).setEtag().build();
             Assertions.assertFalse(getRootResponseIfMatchingStarNotExisting.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
@@ -83,6 +121,7 @@ public class ETagTest {
             Request getRootRequestIfModifiedSinceBeginningOfTime = new Request(new ByteArrayInputStream(("GET / HTTP/1.1\nETag: 533839800\nIf-Modified-Since: "+dateBeginning).getBytes()));
             Request getRootRequestResourceNotExisting = new Request(new ByteArrayInputStream(("GET /kaudawelsch HTTP/1.1\nETag: 533839800\nIf-Modified-Since: "+dateBeginning).getBytes()));
             Request getRootRequestDateInvalid = new Request(new ByteArrayInputStream(("GET / HTTP/1.1\nETag: 533839800\nIf-Modified-Since: "+dateTomorrow).getBytes()));
+            Request getIfNotMatchAndIfModifiedSince = new Request(new ByteArrayInputStream(("GET / HTTP/1.1\nETag: 533839800\nIf-Modified-Since:  "+ dateNow +"\nIf-None-Match: 533839801").getBytes()));
 
             Response getRootResponseIfModifiedSinceNow = new ResponseBuilder(getRootRequestIfModifiedSinceNow).setEtag().build();
             Assertions.assertTrue(getRootResponseIfModifiedSinceNow.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
@@ -102,6 +141,12 @@ public class ETagTest {
             Assertions.assertTrue(getRootResponseDateInvalid.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
             Assertions.assertEquals("ETag: 533839800", getRootResponseDateInvalid.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).get());
             Assertions.assertArrayEquals(rootHTML.getData(), getRootResponseDateInvalid.getData());
+
+            Response getIfNotMatchAndModifiedSinceResponse = new ResponseBuilder(getIfNotMatchAndIfModifiedSince).setEtag().build();
+            Assertions.assertFalse(Arrays.equals("304 Not Modified".getBytes(), getIfNotMatchAndModifiedSinceResponse.getData()));
+            Assertions.assertTrue(getIfNotMatchAndModifiedSinceResponse.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
+            Assertions.assertEquals("ETag: 533839800", getIfNotMatchAndModifiedSinceResponse.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).get());
+            Assertions.assertArrayEquals(rootHTML.getData(), getIfNotMatchAndModifiedSinceResponse.getData());
 
             // TODO Add a request with invalid date
         } catch (IOException ex) {

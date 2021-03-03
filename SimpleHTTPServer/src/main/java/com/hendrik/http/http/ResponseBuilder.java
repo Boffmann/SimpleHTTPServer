@@ -63,6 +63,8 @@ public class ResponseBuilder {
             return this;
         }
 
+        boolean shouldPerformIfModifiedSince = true;
+
         /*
         ETag description taken from https://tools.ietf.org/html/rfc2616#section-14.24
         If any of the entity tags match the entity tag of the entity that
@@ -74,6 +76,7 @@ public class ResponseBuilder {
         // Having both If-Match and If-None-Match or If-Modified-Since is undefined behaviour
         */
         Optional<List<String>> ifMatchEntries = request.getHeaderValues(Field.IF_MATCH);
+        Optional<List<String>> ifNoneMatchEntries = request.getHeaderValues(Field.IF_NONE_MATCH);
         Optional<List<String>> ifModifiedSinceEntries = request.getHeaderValues(Field.IF_MODIFIED_SINCE);
         Optional<List<String>> etagEntry = request.getHeaderValues(Field.ENTITIY_TAG);
             if (ifMatchEntries.isPresent()) { 
@@ -104,7 +107,40 @@ public class ResponseBuilder {
                     this.isImmutable = true;
                     return this;
                 }
-            } else if (ifModifiedSinceEntries.isPresent()) { // My assumption here is that the passed date is always parseable by the server
+            } 
+            if (ifNoneMatchEntries.isPresent()) {
+                boolean didMatch = false;
+                boolean starMatchProvided = false;
+
+                try {
+                    String bodyHash = hashBytes(this.resource.getData());
+                    for (String etag : ifNoneMatchEntries.get()) {
+                        if (etag.equals(bodyHash)) {
+                            didMatch = true;
+                        }
+                        if (etag.equals("*")) {
+                            starMatchProvided = true;
+                            didMatch = true;
+                        }
+                    }
+                } catch (IOException ex) {
+                    this.statusCode = StatusCode.INTERNALERROR;
+                    this.isImmutable = true;
+                    return this;
+                }
+
+                if (!didMatch) {
+                    shouldPerformIfModifiedSince = false;
+                }
+
+                if (didMatch || (starMatchProvided && !etagEntry.isPresent())) {
+                    this.statusCode = StatusCode.NOTMODIFIED;
+                    this.isImmutable = true;
+                    return this;
+                }
+
+            }
+            if (shouldPerformIfModifiedSince && ifModifiedSinceEntries.isPresent()) { // My assumption here is that the passed date is always parseable by the server
                 for (String isModifiedSinceDate : ifModifiedSinceEntries.get()) {
                     boolean dateValid = isDateValid(isModifiedSinceDate);
                     if (!dateValid) {

@@ -2,14 +2,13 @@ package com.hendrik.http.http;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Class representing a HTTP Response message
  * 
  * @author Hendrik Tjabben
  */
-public class Response {
+public class Response extends HTTPMessage {
 
     private final static String VERSION = "HTTP/1.1";
 
@@ -19,16 +18,13 @@ public class Response {
     private HeaderFields.StatusCode statusCode;
 
     /**
-     * The header of this response
-     */
-    private Header header;
-
-    /**
      * The body of this response
      */
     private byte[] body;
 
     public Response(final HeaderFields.StatusCode statusCode, final Header header, final byte[] body) {
+        super(header);
+
         this.statusCode = statusCode;
         this.header = header;
         this.body = body;
@@ -58,11 +54,6 @@ public class Response {
         return this.body;
     }
 
-    /**
-     * Getter for the header lines that belong to this request
-     * 
-     * @return The header lines that belong to this request
-     */
     public List<String> getHeaderLines() {
         List<String> result = new ArrayList<String>();
 
@@ -73,14 +64,5 @@ public class Response {
 
     }
 
-    /**
-     * Getter to aquire the header line for a specific header field
-     * 
-     * @param headerField The header field of which the line should be taken
-     * @return An optional containing the header line for the inquired field. Empty if no header line belongs to the requested header field
-     */
-    public Optional<String> getHeaderLine(final HeaderFields.Field headerField) {
-        return this.header.getLine(headerField);
-    }
 
 }

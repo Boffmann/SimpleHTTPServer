@@ -4,15 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Class representing a HTTP request
  * 
  * @author Hendrik Tjabben
  */
-public class Request {
+public class Request extends HTTPMessage {
 
     /**
      * Represents to which method this header belongs
@@ -30,11 +28,6 @@ public class Request {
     private String httpVersion;
 
     /**
-     * The header of this request
-     */
-    private Header header;
-
-    /**
      * Create a new Request by parsing the TCP input stream.
      * It assumes that when the input stream contains a request line, this request line is valid
      * 
@@ -42,6 +35,7 @@ public class Request {
      * @throws IOException An I/O error happened while parsing the stream
      */
     public Request(final InputStream inputStream) throws IOException {
+        super(new Header());
 
         if (inputStream == null) {
             System.out.println("Request created from empty input Stream");
@@ -74,8 +68,6 @@ public class Request {
 
         this.uri = splittedStatusLine[1];
         this.httpVersion = splittedStatusLine[2];
-
-        this.header = new Header();
 
         String line;
         while ( (line = reader.readLine()) != null) {
@@ -111,26 +103,6 @@ public class Request {
      */
     public String getURI() {
         return this.uri;
-    }
-
-    /**
-     * Getter to aquire the header line for a specific header field
-     * 
-     * @param headerField The header field of which the line should be taken
-     * @return An optional containing the header line for the inquired field. Empty if the header contains no entry for the requested field
-     */
-    public Optional<String> getHeaderLine(final HeaderFields.Field headerField) {
-        return this.header.getLine(headerField);
-    }
-
-    /**
-     * Returns a list of all values present for a specific header field
-     * 
-     * @param headerField The header field of which the entries should be taken
-     * @return An optional containing all entries for the specified header field
-     */
-    public Optional<List<String>> getHeaderValues(final HeaderFields.Field headerField) {
-        return this.header.getValues(headerField);
     }
 
 }

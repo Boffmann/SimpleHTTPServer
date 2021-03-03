@@ -54,9 +54,9 @@ public class Header {
      */
     public boolean addEntryWhenSupported(final String line) {
 
-        String lineNoSpaces = line.replaceAll(" ", "");
+        // String lineNoSpaces = line.replaceAll(" ", "");
 
-        String[] keyValue = lineNoSpaces.split(":");
+        String[] keyValue = line.split(":", 2);
 
         if (keyValue.length != 2) {
             return false;
@@ -67,11 +67,21 @@ public class Header {
             return false;
         }
 
-        List<String> newEntryList = new ArrayList<String>();
-        String[] valueList = keyValue[1].split(",");
+        String valueLine = keyValue[1].trim();
 
-        for (String value : valueList) {
-            newEntryList.add(value);
+        if (!HeaderFields.isDateField(field)) {
+            valueLine = valueLine.replaceAll(" ", "");
+        }
+
+        List<String> newEntryList = new ArrayList<String>();
+        if (HeaderFields.allowsMultipleValues(field)) {
+            String[] valueList = valueLine.split(",");
+
+            for (String value : valueList) {
+                newEntryList.add(value);
+            }
+        } else {
+            newEntryList.add(valueLine);
         }
 
         this.headerEntries.put(field, newEntryList);

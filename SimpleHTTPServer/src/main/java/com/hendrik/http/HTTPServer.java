@@ -1,5 +1,6 @@
 package com.hendrik.http;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -25,7 +26,7 @@ public class HTTPServer {
     /**
      * The root directory from which the server serves files and subdirectories
      */
-    private static String rootDirectory;
+    private static String rootDirectory = null;
 
     /**
      * The server socket used for incoming connections
@@ -71,6 +72,11 @@ public class HTTPServer {
      * @return The root directory from which to serve files
      */
     public static final String getRootDirectory() {
+        if (HTTPServer.rootDirectory == null) {
+            File workingDir = new File(System.getProperty("user.dir"));
+            File testDir = new File(workingDir.getParent() + "/Test");
+            return testDir.getAbsolutePath();
+        }
         return HTTPServer.rootDirectory;
     }
 

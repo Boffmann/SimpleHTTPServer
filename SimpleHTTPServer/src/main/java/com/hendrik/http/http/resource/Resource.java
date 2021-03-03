@@ -2,6 +2,9 @@ package com.hendrik.http.http.resource;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.hendrik.http.HTTPServer;
 
@@ -79,6 +82,25 @@ public abstract class Resource {
         }
 
         return this.handle.getName();
+    }
+
+    // https://stackoverflow.com/questions/39279480/how-to-convert-rfc-1123-date-time-formatter-to-local-time
+    // https://mkyong.com/java8/java-8-convert-zoneddatetime-to-timestamp/
+    public boolean wasModifiedAfter(final String stringDate) {
+
+        if (!this.exists()) {
+            return false;
+        }
+
+        Timestamp lastModifiedTimestamp = new Timestamp(this.handle.lastModified());
+        ZonedDateTime zdt = ZonedDateTime.parse(stringDate, DateTimeFormatter.RFC_1123_DATE_TIME);
+        Timestamp parameterTimestamp = Timestamp.valueOf(zdt.toLocalDateTime());
+
+        //the value 0 if the two Timestamp objects are equal;
+        // a value less than 0 if this Timestamp object is before the given argument;
+        //and a value greater than 0 if this Timestamp object is after the given argument.
+        //https://docs.oracle.com/javase/8/docs/api/java/sql/Timestamp.html
+        return ((lastModifiedTimestamp.compareTo(parameterTimestamp)) > 0);
     }
 
     /**

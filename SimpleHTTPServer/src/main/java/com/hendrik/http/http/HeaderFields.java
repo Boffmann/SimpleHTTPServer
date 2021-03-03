@@ -42,6 +42,16 @@ public class HeaderFields{
         NOTIMPLEMENTED,
 
         /**
+         * The client made a bad request
+         */
+        BADREQUEST,
+
+        /**
+         * The requested resource was not modified since the requested If-Modified-Since date
+         */
+        NOTMODIFIED,
+
+        /**
          * The precondition for this request failed
          */
         PRECONDITION_FAILED,
@@ -62,6 +72,10 @@ public class HeaderFields{
         switch(statusCode) {
             case OK:
                 return "200 OK";
+            case NOTMODIFIED:
+                return "304 Not Modified";
+            case BADREQUEST:
+                return "400 Bad Request";
             case NOTFOUND:
                 return "404 Not Found";
             case PRECONDITION_FAILED:
@@ -117,7 +131,7 @@ public class HeaderFields{
         /**
          * Header field used for If-Modified-Since ETag behaviour
          */
-        // IF_MODIFIED_SINCE
+        IF_MODIFIED_SINCE
 
     };
 
@@ -141,6 +155,8 @@ public class HeaderFields{
                 return "ETag";
             case IF_MATCH:
                 return "If-Match";
+            case IF_MODIFIED_SINCE:
+                return "If-Modified-Since";
             default:
                 return null;
         }
@@ -160,9 +176,40 @@ public class HeaderFields{
             return Field.ENTITIY_TAG;
         } else if (fieldString.toLowerCase().equals(toString(Field.IF_MATCH).toLowerCase())) {
             return Field.IF_MATCH;
+        } else if (fieldString.toLowerCase().equals(toString(Field.IF_MODIFIED_SINCE).toLowerCase())) {
+            return Field.IF_MODIFIED_SINCE;
         }
         
         return null;
+    }
+
+    /**
+     * Check whether the specified header field allows to have multiple, comma separated, values.
+     * 
+     * @param field The field to check for
+     * @return True if the field can have multiple values, false otherwise
+     */
+    public static boolean allowsMultipleValues(final Field field) {
+
+        if (field == Field.IF_MATCH) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Check whether the specified header field represents a date
+     * 
+     * @param field The field to check for
+     * @return True if a RFC1123 Date is represented by this field, false otherwise
+     */
+    public static boolean isDateField(final Field field) {
+
+        if (field == Field.IF_MODIFIED_SINCE || field == Field.DATE) {
+            return true;
+        }
+        return false;
     }
 
 }

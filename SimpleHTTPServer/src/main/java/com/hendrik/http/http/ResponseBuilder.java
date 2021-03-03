@@ -1,7 +1,9 @@
 package com.hendrik.http.http;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -69,10 +71,12 @@ public class ResponseBuilder {
         and any current entity exists for that resource, then the server MAY
         perform the requested method as if the If-Match header field did not
         exist.
+        // Having both If-Match and If-None-Match or If-Modified-Since is undefined behaviour
         */
         Optional<List<String>> ifMatchEntries = request.getHeaderValues(Field.IF_MATCH);
+        Optional<List<String>> ifModifiedSinceEntries = request.getHeaderValues(Field.IF_MODIFIED_SINCE);
         Optional<List<String>> etagEntry = request.getHeaderValues(Field.ENTITIY_TAG);
-            if (ifMatchEntries.isPresent()) {
+            if (ifMatchEntries.isPresent()) { 
                 boolean didMatch = false;
                 boolean starMatchProvided = false;
 
@@ -99,6 +103,18 @@ public class ResponseBuilder {
                     this.statusCode = StatusCode.PRECONDITION_FAILED;
                     this.isImmutable = true;
                     return this;
+                }
+            } else if (ifModifiedSinceEntries.isPresent()) { // My assumption here is that the passed date is always parseable by the server
+                for (String isModifiedSinceDate : ifModifiedSinceEntries.get()) {
+                    boolean dateValid = isDateValid(isModifiedSinceDate);
+                    if (!dateValid) {
+                        return this;
+                    }
+                    if (!this.resource.wasModifiedAfter(isModifiedSinceDate)) {
+                        this.statusCode = StatusCode.NOTMODIFIED;
+                        this.isImmutable = true;
+                        return this;
+                    }                    
                 }
             }
         
@@ -165,5 +181,26 @@ public class ResponseBuilder {
     private static String hashBytes(final byte[] bytes) {
         String bodyHash = String.valueOf(Arrays.hashCode(bytes));
         return bodyHash;
+    }
+
+    /**
+     * Check whether a specified date string is valid
+     * The date is invalid when it is later than the server's current time (following RFC2616)
+     * 
+     * @param date The date string to check
+     * @return True if the date string is valid, false otherwise
+     */
+    private static boolean isDateValid(final String date) {
+
+        ZonedDateTime now = ZonedDateTime.now();
+        Timestamp nowTimestamp = Timestamp.valueOf(now.toLocalDateTime());
+
+        ZonedDateTime passedDate = ZonedDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
+        Timestamp passedTimestamp = Timestamp.valueOf(passedDate.toLocalDateTime());
+        //the value 0 if the two Timestamp objects are equal;
+        // a value less than 0 if this Timestamp object is before the given argument;
+        //and a value greater than 0 if this Timestamp object is after the given argument.
+        //https://docs.oracle.com/javase/8/docs/api/java/sql/Timestamp.html
+        return ((nowTimestamp.compareTo(passedTimestamp)) > 0);
     }
 }

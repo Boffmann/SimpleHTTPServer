@@ -82,6 +82,15 @@ public class ResponseBuilder {
         } else {
             this.statusCode = StatusCode.OK;
         }
+
+
+        Optional<List<String>> connectionHeader = request.getHeaderValues(Field.CONNECTION);
+
+        if (connectionHeader.isPresent()) {
+            for (String entry : connectionHeader.get()) {
+                this.header.addEntry(Field.CONNECTION, entry);
+            }
+        }
     }
 
     /**

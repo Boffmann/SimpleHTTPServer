@@ -136,7 +136,12 @@ public class HeaderFields{
         /**
          * Header field used for If-Modified-Since ETag behaviour
          */
-        IF_MODIFIED_SINCE
+        IF_MODIFIED_SINCE,
+
+        /**
+         * Header field that expresses the connection type (keep-alive or close)
+         */
+        CONNECTION
 
     };
 
@@ -164,6 +169,8 @@ public class HeaderFields{
                 return "If-None-Match";
             case IF_MODIFIED_SINCE:
                 return "If-Modified-Since";
+            case CONNECTION:
+                return "Connection";
             default:
                 return null;
         }
@@ -187,6 +194,8 @@ public class HeaderFields{
             return Field.IF_NONE_MATCH;
         } else if (fieldString.toLowerCase().equals(toString(Field.IF_MODIFIED_SINCE).toLowerCase())) {
             return Field.IF_MODIFIED_SINCE;
+        } else if (fieldString.toLowerCase().equals(toString(Field.CONNECTION).toLowerCase())) {
+            return Field.CONNECTION;
         }
         
         return null;

@@ -1,14 +1,19 @@
 package com.hendrik.http;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.List;
+import java.util.Optional;
 
 import com.hendrik.http.http.Request;
 import com.hendrik.http.http.Response;
 import com.hendrik.http.http.ResponseBuilder;
+import com.hendrik.http.http.HeaderFields.Field;
 
 /**
  * A Thread that allows to serve incoming HTTP GET and HEAD requests
@@ -48,12 +53,13 @@ public class ConnectionThread extends Thread {
     @Override
     public void run() {
 
+        boolean shouldServe = true;
+
         try {
 
-            if (clientSocket.isClosed()) {
-                System.out.println("The socket is closed");
-                return;
-            }
+            // Persistent connections are the default in HTTP/1.1
+            // https://www.w3.org/Protocols/rfc2616/rfc2616-sec8.html
+            clientSocket.setKeepAlive(true);
 
             InputStream input = clientSocket.getInputStream();
 
@@ -66,20 +72,34 @@ public class ConnectionThread extends Thread {
             OutputStream output = clientSocket.getOutputStream();
             DataOutputStream outputStream = new DataOutputStream(output);
 
-            Request request = new Request(input);
-            ResponseBuilder responseBuilder = new ResponseBuilder(request);
-            Response response = responseBuilder
-                .setEtag()
-                .build();
+            while (shouldServe) {
 
-            for (String line : response.getHeaderLines()) {
-                outputStream.writeBytes(line);
+                Request request = new Request(input);
+                ResponseBuilder responseBuilder = new ResponseBuilder(request);
+                Response response = responseBuilder
+                    .setEtag()
+                    .build();
+                
+                for (String line : response.getHeaderLines()) {
+                    outputStream.writeBytes(line);
+                    outputStream.writeBytes("\r\n");
+                }
                 outputStream.writeBytes("\r\n");
+                outputStream.write(response.getData());
+                outputStream.flush();
+
+                Optional<List<String>> connectionHeader = response.getHeaderValues(Field.CONNECTION);
+
+                if (connectionHeader.isPresent()) {
+                    for (String value : connectionHeader.get()) {
+                        if (value.toLowerCase().equals("close")) {
+                            shouldServe = false; 
+                            output.close();
+                            input.close();
+                        }
+                    }
+                }
             }
-            outputStream.writeBytes("\r\n");
-            outputStream.write(response.getData());
-            outputStream.flush();
-            outputStream.close();
 
         } catch (IOException ex) {
             System.out.println("Server I/O exception while serving client: " + ex.getMessage());

@@ -48,7 +48,7 @@ public class ETagTest {
             Request headRootRequestIfMatchStarResourceNotExisting = new Request(new ByteArrayInputStream("HEAD /kaudawelsch HTTP/1.1\nETag: 533839800\nIf-Match: *".getBytes()));
             Request headRootRequestIfMatchNotMatching = new Request(new ByteArrayInputStream("HEAD / HTTP/1.1\nETag: 533839800\nIf-Match: 533839801".getBytes()));
 
-            Resource rootHTML = Resource.createFromPath("/Test1/root.html");
+            Resource rootHTML = Resource.createFromURI("/Test1/root.html");
 
             Response getRootResponseIfMatch = new ResponseBuilder(getRootRequestIfMatch).setEtag().build();
             Assertions.assertTrue(getRootResponseIfMatch.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
@@ -109,7 +109,7 @@ public class ETagTest {
             Request headRootRequestIfMatchNotMatching = new Request(new ByteArrayInputStream("HEAD / HTTP/1.1\nETag: 533839800\nIf-None-Match: 533839801".getBytes()));
 
 
-            Resource rootHTML = Resource.createFromPath("/Test1/root.html");
+            Resource rootHTML = Resource.createFromURI("/Test1/root.html");
 
             Response getRootResponseIfMatch = new ResponseBuilder(getRootRequestIfMatch).setEtag().build();
             Assertions.assertTrue(getRootResponseIfMatch.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
@@ -159,7 +159,7 @@ public class ETagTest {
     @Test
     public void testIfModifiedSince() {
         try {
-            Resource rootHTML = Resource.createFromPath("/Test1/root.html");
+            Resource rootHTML = Resource.createFromURI("/Test1/root.html");
             System.out.println(HTTPServer.getRootDirectory());
 
             String dateNow = DateTimeFormatter.RFC_1123_DATE_TIME.format(OffsetDateTime.now());

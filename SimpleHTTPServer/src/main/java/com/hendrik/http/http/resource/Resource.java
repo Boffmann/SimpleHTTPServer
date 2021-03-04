@@ -23,11 +23,16 @@ public abstract class Resource {
     /**
      * Factory Method for creating a new resource
      * 
-     * @param relativePath The resource's path relative to the server wide root directory
+     * @param uri The URI relative to the server wide root directory
      * @return A new {@link org.hendrik.http.DirectoryResource} when the path references a directory, a new {@link org.hendrik.http.FileResource} otherwise
      */
-    public static Resource createFromPath(final String relativePath) {
-        String absolutePath = HTTPServer.getRootDirectory() + relativePath;
+    public static Resource createFromURI(final String uri) {
+
+        if (uri.toLowerCase().equals("/wally")) {
+            return new WallResource();
+        }
+
+        String absolutePath = HTTPServer.getRootDirectory() + uri;
 
         File file = new File(absolutePath);
 

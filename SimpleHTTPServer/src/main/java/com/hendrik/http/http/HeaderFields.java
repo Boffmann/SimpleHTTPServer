@@ -68,8 +68,9 @@ public class HeaderFields{
     };
 
     /**
-     * Get the string representation for the status code
+     * Get the string representation for a status code.
      * 
+     * @param statusCode the status code to get the string representation for 
      * @return The string representation for the status code
      */
     public static String toString(final StatusCode statusCode) {

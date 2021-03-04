@@ -15,16 +15,14 @@ import com.hendrik.http.HTTPServer;
  */
 public abstract class Resource {
 
-    /**
-     * A handle to the file represented by this resource
-     */
+    /** A handle to the file represented by this resource */
     protected final File handle;
 
     /**
      * Factory Method for creating a new resource
      * 
      * @param relativePath The resource's path relative to the server wide root directory
-     * @return A new {@link org.hendrik.http.DirectoryResource} when the path references a directory, a new {@link org.hendrik.http.FileResource} otherwise
+     * @return A new DirectoryResource when the path references a directory, a new FileResource otherwise
      */
     public static Resource createFromPath(final String relativePath) {
         String absolutePath = HTTPServer.getRootDirectory() + relativePath;

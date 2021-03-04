@@ -19,6 +19,9 @@ public class Header {
      */
     private Map<HeaderFields.Field, List<String>> headerEntries;
 
+    /**
+     * Basic constructor for a new Header instance
+     */
     public Header() {
         this.headerEntries = new HashMap<HeaderFields.Field, List<String>>();
     }
@@ -26,8 +29,8 @@ public class Header {
     /**
      * Add an header entry in key value type
      * 
-     * @param field The key field type
-     * @param value The field type's value
+     * @param field The key field type for the to add header line
+     * @param value The field type's value for the to add header line
      */
     public void addEntry(final HeaderFields.Field field, final String value) {
 

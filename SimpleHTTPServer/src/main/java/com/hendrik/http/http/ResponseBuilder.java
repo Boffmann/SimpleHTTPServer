@@ -197,7 +197,8 @@ public class ResponseBuilder {
     /**
      * Builds the final result by setting general header fields, as well as the response body's
      * content type and data
-     * @return
+     * 
+     * @return The final build response
      */
     public Response build() {
 

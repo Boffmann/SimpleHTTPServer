@@ -1,19 +1,14 @@
 package com.hendrik.http;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
 import java.util.Optional;
 
-import com.hendrik.http.http.Request;
-import com.hendrik.http.http.Response;
-import com.hendrik.http.http.ResponseBuilder;
-import com.hendrik.http.http.HeaderFields.Field;
+import com.hendrik.http.HeaderFields.Field;
 
 /**
  * A Thread that allows to serve incoming HTTP GET and HEAD requests

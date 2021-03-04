@@ -1,4 +1,4 @@
-package com.hendrik.http.http.resource;
+package com.hendrik.http.resource;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.hendrik.http.http;
+package com.hendrik.http;
 
 /**
  * Class with convenience methods and enums for HTTP Header fields

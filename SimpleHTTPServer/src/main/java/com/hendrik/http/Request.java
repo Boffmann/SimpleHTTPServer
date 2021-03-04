@@ -1,13 +1,11 @@
-package com.hendrik.http.http;
+package com.hendrik.http;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Optional;
 
-import com.hendrik.http.http.DB.DBHandler;
+import com.hendrik.http.DB.DBHandler;
 
 /**
  * Class representing a HTTP request

@@ -1,4 +1,4 @@
-package com.hendrik.http.http;
+package com.hendrik.http;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -9,11 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.hendrik.http.HTTPServer;
-import com.hendrik.http.http.HeaderFields.Field;
-import com.hendrik.http.http.HeaderFields.RequestMethod;
-import com.hendrik.http.http.HeaderFields.StatusCode;
-import com.hendrik.http.http.resource.Resource;
+import com.hendrik.http.HeaderFields.Field;
+import com.hendrik.http.HeaderFields.RequestMethod;
+import com.hendrik.http.HeaderFields.StatusCode;
+import com.hendrik.http.resource.Resource;
 
 /**
  * Class used for building HTTP Responses.

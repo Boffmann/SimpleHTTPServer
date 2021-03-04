@@ -1,4 +1,4 @@
-package com.hendrik.http.http;
+package com.hendrik.http;
 
 import java.util.ArrayList;
 import java.util.HashMap;

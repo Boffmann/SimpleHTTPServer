@@ -7,11 +7,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
-import com.hendrik.http.http.Request;
-import com.hendrik.http.http.Response;
-import com.hendrik.http.http.ResponseBuilder;
-import com.hendrik.http.http.resource.Resource;
-import com.hendrik.http.http.HeaderFields;
+import com.hendrik.http.resource.Resource;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

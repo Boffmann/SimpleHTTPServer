@@ -1,6 +1,6 @@
 # SimpleHTTPServer
 
-It's a simple HTTP web server, written in Java, that provides static files and allows to browse through a directory and its subdirectories.
+It's a simple HTTP web server, written in Java, that provides static files and allows to browse through a directory and its subdirectories. It also provides a simple "Wall" application that is served at `/Wally`.
 
 The directory `SimpleHTTPServer` contains the actual project. The directory `Test` provides a simple file structure that is used for testing the server.
 
@@ -23,6 +23,7 @@ $ cd ./SimpleHTTPServer
 $ mvn clean package
 ```
 This will create a directory called `target` with a file called `SimpleHTTPServer-1.0-SNAPSHOT.jar`, which can be run as described above.
+This also generates the javadoc for this project which can afterwards be found in `target/apidocs`.
 
 # Use Docker
 
@@ -35,6 +36,5 @@ The server can also be run inside a docker container. In order to create a docke
 ```
 
 With (1), it is ensured that the latest server version is used.
-With (2), a new docker image is created based on the `Dockerfile`.
-With (3), the freshly created docker image is run and the service is exposed to port <EXPOSED_PORT> on localhost. The server starts serving files from the docker image's root directory.
-
+With (2), a new docker image is created from openjdk:11.
+With (3), the freshly created docker image is run and the service is exposed to port <EXPOSED\_PORT> on localhost. The server starts serving files from the docker image's root directory. The root directory can be changed by adding the corresponding parameter to the java command in `Dockerfile`.

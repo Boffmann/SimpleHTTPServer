@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javax.management.InvalidAttributeValueException;
 
-import com.hendrik.http.http.resource.Resource;
+import com.hendrik.http.resource.Resource;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,7 +37,6 @@ public class ResourceTest {
         try {
             server = new HTTPServer(8080, testDirPath);
         } catch (InvalidAttributeValueException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -70,6 +69,8 @@ public class ResourceTest {
         Assertions.assertTrue(umlaute.exists());
         Resource rootHTML = Resource.createFromURI("/Test1/root.html");
         Assertions.assertTrue(rootHTML.exists());
+        Resource fileWithSpaces = Resource.createFromURI("/Test2/File With Spaces.txt");
+        Assertions.assertTrue(fileWithSpaces.exists());
     }
 
     @Test

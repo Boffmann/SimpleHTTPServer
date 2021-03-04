@@ -1,10 +1,10 @@
-package com.hendrik.http.http.resource;
+package com.hendrik.http.resource;
 
 import java.io.IOException;
 import java.util.List;
 
-import com.hendrik.http.http.DB.Comment;
-import com.hendrik.http.http.DB.DBHandler;
+import com.hendrik.http.DB.Comment;
+import com.hendrik.http.DB.DBHandler;
 
 /**
  * A resource that represents a simple "Wall" which displays comments submitted via a POST request

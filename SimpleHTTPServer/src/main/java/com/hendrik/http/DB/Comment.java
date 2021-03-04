@@ -1,4 +1,4 @@
-package com.hendrik.http.http.DB;
+package com.hendrik.http.DB;
 
 public class Comment {
    

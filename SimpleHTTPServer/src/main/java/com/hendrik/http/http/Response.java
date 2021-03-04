@@ -17,11 +17,6 @@ public class Response extends HTTPMessage {
      */
     private HeaderFields.StatusCode statusCode;
 
-    /**
-     * The body of this response
-     */
-    private byte[] body;
-
     public Response(final HeaderFields.StatusCode statusCode, final Header header, final byte[] body) {
         super(header);
 

@@ -14,6 +14,11 @@ public class HTTPMessage {
     protected Header header;
 
     /**
+     * The body of this response
+     */
+    protected byte[] body;
+
+    /**
      * Create a new HTTPMessage by setting its headers
      * 
      * @param header The header for this HTTPMessage

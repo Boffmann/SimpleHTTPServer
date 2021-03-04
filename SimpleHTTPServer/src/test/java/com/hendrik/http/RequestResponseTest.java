@@ -35,7 +35,7 @@ public class RequestResponseTest {
             getNotPresentRequest = new Request(new ByteArrayInputStream("GET /fileNotThere HTTP/1.1".getBytes()));
             headRequest = new Request(new ByteArrayInputStream("HEAD / HTTP/1.1".getBytes()));
             headRequestFile = new Request(new ByteArrayInputStream("HEAD /Test2/Test21/subfolder.txt HTTP/1.1".getBytes()));
-            postRequest = new Request(new ByteArrayInputStream("POST /TestPost HTTP/1.1".getBytes()));
+            postRequest = new Request(new ByteArrayInputStream("PUT /TestPost HTTP/1.1".getBytes()));
             nullRequest = new Request(null);
         } catch (IOException ex) {
             // Should not happen
@@ -77,7 +77,7 @@ public class RequestResponseTest {
     @Test
     public void createResponseTest() {
 
-        Resource rootHTML = Resource.createFromPath("/Test1/root.html");
+        Resource rootHTML = Resource.createFromURI("/Test1/root.html");
         
         Response getResponse = new ResponseBuilder(getRootRequest).build();
         Assertions.assertTrue(getResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());

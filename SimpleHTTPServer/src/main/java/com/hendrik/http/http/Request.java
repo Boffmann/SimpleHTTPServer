@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Optional;
+
+import com.hendrik.http.http.DB.DBHandler;
 
 /**
  * Class representing a HTTP request
@@ -56,15 +60,22 @@ public class Request extends HTTPMessage {
             return;
         }
 
+        System.out.println("Status Line" + statusLine);
+
         String[] splittedStatusLine = statusLine.split("\\s+");
 
         if (splittedStatusLine[0].toUpperCase().equals("GET")) {
             this.method = HeaderFields.RequestMethod.GET;
         } else if (splittedStatusLine[0].toUpperCase().equals("HEAD")) {
             this.method = HeaderFields.RequestMethod.HEAD;
-        } else {
+        } else if (splittedStatusLine[0].toUpperCase().equals("POST")) {
+            this.method = HeaderFields.RequestMethod.POST;
+        }
+        else {
             this.method = HeaderFields.RequestMethod.UNSUPPORTED;
         }
+
+        System.out.println("The method: " + this.method);
 
         this.uri = splittedStatusLine[1];
         this.httpVersion = splittedStatusLine[2];
@@ -74,8 +85,21 @@ public class Request extends HTTPMessage {
             if (line.equals("")) {
                 break;
             }
+            System.out.println("Line: " + line);
             this.header.addEntryWhenSupported(line);
         }
+
+        // Based on
+        // https://stackoverflow.com/questions/3033755/reading-post-data-from-html-form-sent-to-serversocket
+        if (getMethod() == HeaderFields.RequestMethod.POST) {
+
+            StringBuilder payloadBuilder = new StringBuilder();
+            while (reader.ready()) {
+                payloadBuilder.append((char) reader.read());
+            }
+            DBHandler.addComment(payloadBuilder.toString());
+        }
+
     }
 
     /**

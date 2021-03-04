@@ -22,6 +22,11 @@ public class HeaderFields{
         HEAD,
 
         /**
+         * Represents an HTTP POST request
+         */
+        POST,
+
+        /**
          * Represents that the desired HTTP Method type is not supported by the server
          */
         UNSUPPORTED

@@ -65,7 +65,7 @@ public class ResponseBuilder {
      */
     public ResponseBuilder(final Request request) {
         this.request = request;
-        this.resource = Resource.createFromPath(request.getURI());
+        this.resource = Resource.createFromURI(request.getURI());
         this.isImmutable = false;
         this.header = new Header();
         this.body = "".getBytes();
@@ -82,7 +82,6 @@ public class ResponseBuilder {
         } else {
             this.statusCode = StatusCode.OK;
         }
-
 
         Optional<List<String>> connectionHeader = request.getHeaderValues(Field.CONNECTION);
 

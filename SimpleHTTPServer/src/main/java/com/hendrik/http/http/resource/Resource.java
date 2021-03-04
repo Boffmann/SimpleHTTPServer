@@ -28,7 +28,7 @@ public abstract class Resource {
      */
     public static Resource createFromURI(final String uri) {
 
-        if (uri.toLowerCase().equals("/wally")) {
+        if (uri.equals("/Wally")) {
             return new WallResource();
         }
 

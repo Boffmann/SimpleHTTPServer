@@ -60,8 +60,6 @@ public class Request extends HTTPMessage {
             return;
         }
 
-        System.out.println("Status Line" + statusLine);
-
         String[] splittedStatusLine = statusLine.split("\\s+");
 
         if (splittedStatusLine[0].toUpperCase().equals("GET")) {
@@ -75,8 +73,6 @@ public class Request extends HTTPMessage {
             this.method = HeaderFields.RequestMethod.UNSUPPORTED;
         }
 
-        System.out.println("The method: " + this.method);
-
         this.uri = splittedStatusLine[1];
         this.httpVersion = splittedStatusLine[2];
 
@@ -85,7 +81,6 @@ public class Request extends HTTPMessage {
             if (line.equals("")) {
                 break;
             }
-            System.out.println("Line: " + line);
             this.header.addEntryWhenSupported(line);
         }
 

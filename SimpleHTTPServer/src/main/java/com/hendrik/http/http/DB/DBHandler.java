@@ -99,7 +99,6 @@ public class DBHandler {
         String[] lines = formData.split("\n");
 
         for (String line : lines) {
-            System.out.println("Form line: " + line);
             if (line.length() > 1) {
                 if (commentNext) {
                     userNameComment[1] = line;

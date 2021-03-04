@@ -16,6 +16,14 @@ Both, the PORT\_NUMBER and <ROOT_DIRECTORY> parameters are optional. The default
 # Compile
 The project is managed using [Apache Maven](https://maven.apache.org).
 
+I developed this project using the following dependencies:
+
+```
+OpenJDK 11.0.10
+Apache Maven 3.6.0
+MongoDB 3.6.3
+```
+
 In order to download and compile this project, perform the following operations:
 ```
 $ git clone git@github.com:Boffmann/SimpleHTTPServer.git

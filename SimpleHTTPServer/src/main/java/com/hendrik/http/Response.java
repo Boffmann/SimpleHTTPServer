@@ -10,13 +10,18 @@ import java.util.List;
  */
 public class Response extends HTTPMessage {
 
-    private final static String VERSION = "HTTP/1.1";
-
     /**
      * this response's status code
      */
     private HeaderFields.StatusCode statusCode;
 
+    /**
+     * Constructor for a new Response
+     * 
+     * @param statusCode The status code for this response
+     * @param header The new response's headers
+     * @param body The new response's body
+     */
     public Response(final HeaderFields.StatusCode statusCode, final Header header, final byte[] body) {
         super(header);
 
@@ -33,7 +38,7 @@ public class Response extends HTTPMessage {
     private String createStatusLine() {
         
         StringBuilder statusLineBuilder = new StringBuilder()
-            .append(VERSION)
+            .append(HTTPServer.getHTTPVersion())
             .append(" ")
             .append(HeaderFields.toString(this.statusCode));
 
@@ -49,6 +54,12 @@ public class Response extends HTTPMessage {
         return this.body;
     }
 
+    /**
+     * Getter for all header lines that are included in this response.
+     * Used to write the header lines to the outstream
+     * 
+     * @return All header lines of this response.
+     */
     public List<String> getHeaderLines() {
         List<String> result = new ArrayList<String>();
 

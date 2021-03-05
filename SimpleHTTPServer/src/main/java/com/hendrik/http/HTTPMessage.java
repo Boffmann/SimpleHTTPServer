@@ -9,12 +9,12 @@ import java.util.Optional;
 public class HTTPMessage {
     
     /**
-     * The header of this response
+     * The header of this HTTPMessage
      */
     protected Header header;
 
     /**
-     * The body of this response
+     * The body of this HTTPMessage
      */
     protected byte[] body;
 

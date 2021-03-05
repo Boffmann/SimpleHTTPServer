@@ -95,8 +95,16 @@ public abstract class Resource {
         return this.handle.getName();
     }
 
-    // https://stackoverflow.com/questions/39279480/how-to-convert-rfc-1123-date-time-formatter-to-local-time
-    // https://mkyong.com/java8/java-8-convert-zoneddatetime-to-timestamp/
+
+    /**
+     * Allows to check whether this resource was modified after a specific date
+     * This method was inspired by
+     * https://stackoverflow.com/questions/39279480/how-to-convert-rfc-1123-date-time-formatter-to-local-time
+     * https://mkyong.com/java8/java-8-convert-zoneddatetime-to-timestamp/
+     * 
+     * @param stringDate The date to check. Must be in RFC_1123_DATE_TIME format
+     * @return True when the resource was modified after stringDate, false otherwise
+     */
     public boolean wasModifiedAfter(final String stringDate) {
 
         if (!this.exists()) {

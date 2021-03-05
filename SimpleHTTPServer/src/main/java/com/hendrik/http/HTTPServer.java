@@ -90,6 +90,17 @@ public class HTTPServer {
     }
 
     /**
+     * The HTTP version that is supported by this server.
+     * Since it follows the rules for persistent connections of HTTP/1.1, this
+     * is the supported version
+     * 
+     * @return The HTTP version supported by this server
+     */
+    public static final String getHTTPVersion() {
+        return "HTTP/1.1";
+    }
+
+    /**
      * Starts to accept and serve incoming requests.
      * Spawns a new thread so that multiple connections can be served in parallel.
      * 

@@ -2,7 +2,6 @@ package com.hendrik.http;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import com.hendrik.http.resource.Resource;
 

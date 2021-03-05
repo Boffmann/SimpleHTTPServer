@@ -23,6 +23,8 @@ public class WallResource extends Resource {
     /**
      * WallResource overrides the getData function to provide a HTML file that shows previouly made comments
      * and allows to add new ones using a HTML form
+     * 
+     * @return The content of the wall in html format
      */
     @Override
     public byte[] getData() throws IOException {
@@ -53,7 +55,7 @@ public class WallResource extends Resource {
 
     @Override
     public String getContentType() {
-        return "text/html";
+        return "text/html; charset=utf-8";
     }
 
     /**

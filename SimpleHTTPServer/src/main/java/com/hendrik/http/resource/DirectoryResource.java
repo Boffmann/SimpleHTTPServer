@@ -5,23 +5,23 @@ import java.io.File;
 import com.hendrik.http.HTTPServer;
 
 /**
- * A class for Resources that are dictionaries
+ * A class for Resources that are directories
  *  
  * @author Hendrik Tjabben
  */
 public class DirectoryResource extends Resource {
 
     /**
-     * Constructor for Dictionary Resource
+     * Constructor for directory Resource
      * 
-     * @param handle directory handle managed by this resource
+     * @param handle file handle managed by this resource.
      */
     protected DirectoryResource(final File handle) {
         super(handle);
     }
     
     /**
-     * Returns the directorie's content in html form
+     * Returns the directory's content in html form
      * 
      * @return the Directory in html in bytes
      */
@@ -33,7 +33,7 @@ public class DirectoryResource extends Resource {
     /**
      * Getter for the content type
      * 
-     * @return text/html content type
+     * @return text/html content type string with utf-8 encoding
      */
     @Override
     public String getContentType() {
@@ -41,9 +41,9 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Builds the directories file structure as a html file
+     * Builds the directory's file structure as a html file
      * 
-     * @return The directorie's structure as html
+     * @return The directory's structure as html
      */
     private String createDirectoryHTML() {
 

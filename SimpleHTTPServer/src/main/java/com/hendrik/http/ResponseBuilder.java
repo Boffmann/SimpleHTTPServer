@@ -175,9 +175,16 @@ public class ResponseBuilder {
                 }
 
                 if (didMatch || (starMatchProvided && !etagEntry.isPresent())) {
-                    this.statusCode = StatusCode.NOTMODIFIED;
-                    this.isImmutable = true;
-                    return this;
+
+                    if (this.request.getMethod() == RequestMethod.GET || this.request.getMethod() == RequestMethod.HEAD) {
+                        this.statusCode = StatusCode.NOTMODIFIED;
+                        this.isImmutable = true;
+                        return this;
+                    } else {
+                        this.statusCode = StatusCode.PRECONDITION_FAILED;
+                        this.isImmutable = true;
+                        return this;
+                    }
                 }
 
             }

@@ -44,6 +44,8 @@ public class ETagTest {
             Request headRootRequestIfMatchStarResourceNotExisting = new Request(new ByteArrayInputStream("HEAD /kaudawelsch HTTP/1.1\nETag: 533839800\nIf-Match: *".getBytes()));
             Request headRootRequestIfMatchNotMatching = new Request(new ByteArrayInputStream("HEAD / HTTP/1.1\nETag: 533839800\nIf-Match: 533839801".getBytes()));
 
+            Request notImplemented = new Request(new ByteArrayInputStream("PUT / HTTP/1.1\nETag: 533839800\nIf-Match: 533839801".getBytes()));
+
             Resource rootHTML = Resource.createFromURI("/Test1/root.html");
 
             Response getRootResponseIfMatch = new ResponseBuilder(getRootRequestIfMatch).setEtag().build();
@@ -83,6 +85,10 @@ public class ETagTest {
             Response headRootResponseIfMatchingStarNotExisting = new ResponseBuilder(headRootRequestIfMatchStarResourceNotExisting).setEtag().build();
             Assertions.assertFalse(headRootResponseIfMatchingStarNotExisting.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
             Assertions.assertArrayEquals("".getBytes(), headRootResponseIfMatchingStarNotExisting.getData());
+
+            Response notImplementedResponse = new ResponseBuilder(notImplemented).setEtag().build();
+            Assertions.assertTrue(notImplementedResponse.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
+            Assertions.assertArrayEquals("501 Not Implemented".getBytes(), notImplementedResponse.getData());
         } catch (IOException ex) {
             // Should not happen
             Assertions.assertTrue(false);
@@ -104,6 +110,7 @@ public class ETagTest {
             Request headRootRequestIfMatchStarResourceNotExisting = new Request(new ByteArrayInputStream("HEAD /kaudawelsch HTTP/1.1\nETag: 533839800\nIf-None-Match: *".getBytes()));
             Request headRootRequestIfMatchNotMatching = new Request(new ByteArrayInputStream("HEAD / HTTP/1.1\nETag: 533839800\nIf-None-Match: 533839801".getBytes()));
 
+            Request postRequest = new Request(new ByteArrayInputStream("POST / HTTP/1.1\nETag: 533839800\nIf-None-Match: 533839800".getBytes()));
 
             Resource rootHTML = Resource.createFromURI("/Test1/root.html");
 
@@ -141,6 +148,10 @@ public class ETagTest {
             Assertions.assertTrue(headRootResponseIfMatchNotMatching.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
             Assertions.assertEquals("ETag: 533839800", headRootResponseIfMatchNotMatching.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).get());
             Assertions.assertArrayEquals("".getBytes(), headRootResponseIfMatchNotMatching.getData());
+
+            Response postResponse = new ResponseBuilder(postRequest).setEtag().build();
+            Assertions.assertTrue(postResponse.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());
+            Assertions.assertArrayEquals("413 Precondition Failed".getBytes(), postResponse.getData());
 
             Response headRootResponseIfMatchingStarNotExisting = new ResponseBuilder(headRootRequestIfMatchStarResourceNotExisting).setEtag().build();
             Assertions.assertFalse(headRootResponseIfMatchingStarNotExisting.getHeaderLine(HeaderFields.Field.ENTITIY_TAG).isPresent());

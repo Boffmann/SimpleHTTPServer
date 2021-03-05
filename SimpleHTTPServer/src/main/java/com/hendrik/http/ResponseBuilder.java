@@ -1,6 +1,7 @@
 package com.hendrik.http;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
@@ -64,10 +65,17 @@ public class ResponseBuilder {
      */
     public ResponseBuilder(final Request request) {
         this.request = request;
-        this.resource = Resource.createFromURI(request.getURI());
         this.isImmutable = false;
         this.header = new Header();
         this.body = "".getBytes();
+
+        try {
+            this.resource = Resource.createFromURI(request.getURI());
+        } catch (UnsupportedEncodingException ex) {
+            this.statusCode = StatusCode.INTERNALERROR;
+            this.isImmutable = true;
+            return;
+        }
 
         if (request.getMethod() == RequestMethod.UNSUPPORTED) {
             this.statusCode = StatusCode.NOTIMPLEMENTED;
@@ -207,7 +215,7 @@ public class ResponseBuilder {
                 this.header.addEntry(Field.CONTENT_TYPE, resource.getContentType());
                 this.setBody(resourceBody);
             } else {
-                this.header.addEntry(Field.CONTENT_TYPE, "text/plain");
+                this.header.addEntry(Field.CONTENT_TYPE, "text/plain; charset=utf-8");
                 this.setBody(HeaderFields.toString(this.statusCode).getBytes());
             }
 
@@ -219,7 +227,7 @@ public class ResponseBuilder {
             this.header.addEntry(Field.DATE, DateTimeFormatter.RFC_1123_DATE_TIME.format(OffsetDateTime.now()));
 
         } catch (IOException e) {
-            this.header.addEntry(Field.CONTENT_TYPE, "text/plain");
+            this.header.addEntry(Field.CONTENT_TYPE, "text/plain; charset=utf-8");
             this.setBody(HeaderFields.toString(StatusCode.INTERNALERROR).getBytes());
         }
 

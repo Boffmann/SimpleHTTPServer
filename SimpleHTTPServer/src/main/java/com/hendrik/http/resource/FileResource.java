@@ -48,11 +48,20 @@ public class FileResource extends Resource {
      */
     @Override
     public String getContentType() {
+
+        if (!this.exists()) {
+            return null;
+        }
+
         try {
-            return Files.probeContentType(this.handle.toPath());
+            String contentType = Files.probeContentType(this.handle.toPath());
+            if (contentType == "" || contentType == null) {
+                contentType = "text/plain";
+            }
+            return contentType + "; charset=utf-8";
         } catch (IOException e) {
             System.out.println("Content type could not be determined. Handling as plain text");
-            return "text/plain";
+            return "text/plain; charset=utf-8";
         }
     }
     

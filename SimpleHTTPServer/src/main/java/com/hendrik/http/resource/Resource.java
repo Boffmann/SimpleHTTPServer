@@ -2,6 +2,9 @@ package com.hendrik.http.resource;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,18 +24,21 @@ public abstract class Resource {
     /**
      * Factory Method for creating a new resource
      * 
-     * @return A new DirectoryResource when the path references a directory, a new FileResource otherwise
+     * @return A new DirectoryResource when the path references a directory, a new
+     *         FileResource otherwise
      * @param uri The URI relative to the server wide root directory
+     * @throws UnsupportedEncodingException This error is thrown when UTF-8 encoding is not supported
      */
-    public static Resource createFromURI(final String uri) {
+    public static Resource createFromURI(final String uri) throws UnsupportedEncodingException {
 
         if (uri.equals("/Wally")) {
             return new WallResource();
         }
 
-        String uriSpaces = uri.replace("%20", " ");
+        // I hope that the URLDecoder class is not considered cheating
+        String urlDecoded = URLDecoder.decode(uri, StandardCharsets.UTF_8.name());
 
-        String absolutePath = HTTPServer.getRootDirectory() + uriSpaces;
+        String absolutePath = HTTPServer.getRootDirectory() + urlDecoded;
 
         File file = new File(absolutePath);
 
@@ -169,7 +175,9 @@ public abstract class Resource {
     public abstract byte[] getData() throws IOException;
 
     /**
-     * Get the resource's content type. To be implemented by the actual resource
+     * Get the resource's content type. To be implemented by the actual resource.
+     * The encoding for the content-type is always set to utf-8.
+     * So my assumption is that a client can handle utf-8 encodings
      * 
      * @return The resource's content type
      */

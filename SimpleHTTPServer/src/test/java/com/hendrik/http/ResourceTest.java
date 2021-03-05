@@ -1,86 +1,92 @@
 package com.hendrik.http;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import com.hendrik.http.resource.Resource;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class ResourceTest {
 
+    private static Resource rootResource;
+    private static Resource notRootResource;
+    private static Resource notRootInSubfolder;
+    private static Resource notExistingNotRootResource;
+    private static Resource umlauteNotExisting;
+    private static Resource umlauteExisting;
+    private static Resource fileWithSpaces;
+
+    private static Resource rootHTML;
+
+    @BeforeAll
+    public static void setUp() {
+
+        try {
+            rootResource = Resource.createFromURI("/");
+            notRootResource = Resource.createFromURI("/Test1");
+            notRootInSubfolder = Resource.createFromURI("/Test2/Test21/subfolder.txt");
+            notExistingNotRootResource = Resource.createFromURI("/afeafeda/faef");
+            umlauteNotExisting = Resource.createFromURI("/Döcu_ments");
+            umlauteExisting = Resource.createFromURI("/Test1/umläute.txt");
+            fileWithSpaces = Resource.createFromURI("/Test2/File With Spaces.txt");
+
+            rootHTML = Resource.createFromURI("/Test1/root.html");
+        } catch (UnsupportedEncodingException ex) {
+            // Should not happen
+            Assertions.assertTrue(false);
+        }
+    }
+
+
     @Test
     public void testIsRoot() {
-        Resource rootResource = Resource.createFromURI("/");
         Assertions.assertTrue(rootResource.isRoot());
-        Resource notRootResource = Resource.createFromURI("/Test1");
         Assertions.assertFalse(notRootResource.isRoot());
-        Resource notRootInSubfolder = Resource.createFromURI("/Test2/Test21/subfolder.txt");
         Assertions.assertFalse(notRootInSubfolder.isRoot());
-        Resource notExistingNotRootResource = Resource.createFromURI("/afeafeda/faef");
         Assertions.assertFalse(notExistingNotRootResource.isRoot());
-        Resource umlaute = Resource.createFromURI("/Döcu_ments");
-        Assertions.assertFalse(umlaute.isRoot());
+        Assertions.assertFalse(umlauteNotExisting.isRoot());
+        Assertions.assertFalse(fileWithSpaces.isRoot());
     }
 
     @Test
     public void testExists() {
-        Resource rootResource = Resource.createFromURI("/");
         Assertions.assertTrue(rootResource.exists());
-        Resource existing = Resource.createFromURI("/Test1");
-        Assertions.assertTrue(existing.exists());
-        Resource fileInSubfolders = Resource.createFromURI("/Test2/Test21/subfolder.txt");
-        Assertions.assertTrue(fileInSubfolders.exists());
-        Resource notExisting = Resource.createFromURI("/afeafeda/faef");
-        Assertions.assertFalse(notExisting.exists());
-        Resource umlaute = Resource.createFromURI("/Test1/umläute.txt");
-        Assertions.assertTrue(umlaute.exists());
-        Resource rootHTML = Resource.createFromURI("/Test1/root.html");
+        Assertions.assertTrue(notRootResource.exists());
+        Assertions.assertTrue(notRootInSubfolder.exists());
+        Assertions.assertFalse(notExistingNotRootResource.exists());
+        Assertions.assertTrue(umlauteExisting.exists());
         Assertions.assertTrue(rootHTML.exists());
-        Resource fileWithSpaces = Resource.createFromURI("/Test2/File With Spaces.txt");
         Assertions.assertTrue(fileWithSpaces.exists());
     }
 
     @Test
     public void testGetName() {
-        Resource rootResource = Resource.createFromURI("/");
         Assertions.assertEquals("Test", rootResource.getName());
-        Resource existing = Resource.createFromURI("/Test1");
-        Assertions.assertEquals("Test1", existing.getName());
-        Resource fileInSubfolders = Resource.createFromURI("/Test2/Test21/subfolder.txt");
-        Assertions.assertEquals("subfolder.txt", fileInSubfolders.getName());
-        Resource notExisting = Resource.createFromURI("/afeafeda/faef");
-        Assertions.assertEquals(null, notExisting.getName());
-        Resource umlaute = Resource.createFromURI("/Test1/umläute.txt");
-        Assertions.assertEquals("umläute.txt", umlaute.getName());
+        Assertions.assertEquals("Test1", notRootResource.getName());
+        Assertions.assertEquals("subfolder.txt", notRootInSubfolder.getName());
+        Assertions.assertEquals(null, notExistingNotRootResource.getName());
+        Assertions.assertEquals("umläute.txt", umlauteExisting.getName());
     }
 
     @Test
     public void testGetPath() {
-        Resource rootResource = Resource.createFromURI("/");
         Assertions.assertEquals("/", rootResource.getPath());
-        Resource existing = Resource.createFromURI("/Test1");
-        Assertions.assertEquals("/Test1", existing.getPath());
-        Resource fileInSubfolders = Resource.createFromURI("/Test2/Test21/subfolder.txt");
-        Assertions.assertEquals("/Test2/Test21/subfolder.txt", fileInSubfolders.getPath());
-        Resource notExisting = Resource.createFromURI("/afeafeda/faef");
-        Assertions.assertEquals(null, notExisting.getPath());
-        Resource umlaute = Resource.createFromURI("/Test1/umläute.txt");
-        Assertions.assertEquals("/Test1/umläute.txt", umlaute.getPath());
+        Assertions.assertEquals("/Test1", notRootResource.getPath());
+        Assertions.assertEquals("/Test2/Test21/subfolder.txt", notRootInSubfolder.getPath());
+        Assertions.assertEquals(null, notExistingNotRootResource.getPath());
+        Assertions.assertEquals("/Test1/umläute.txt", umlauteExisting.getPath());
     }
 
     @Test
     public void testGetParentDir() {
-        Resource rootResource = Resource.createFromURI("/");
         Assertions.assertEquals("/", rootResource.getParentDirectory());
-        Resource existing = Resource.createFromURI("/Test1");
-        Assertions.assertEquals("/", existing.getParentDirectory());
-        Resource fileInSubfolders = Resource.createFromURI("/Test2/Test21/subfolder.txt");
-        Assertions.assertEquals("/Test2/Test21", fileInSubfolders.getParentDirectory());
-        Resource notExisting = Resource.createFromURI("/afeafeda/faef");
-        Assertions.assertEquals(null, notExisting.getParentDirectory());
-        Resource umlaute = Resource.createFromURI("/Test1/umläute.txt");
-        Assertions.assertEquals("/Test1", umlaute.getParentDirectory());
+        Assertions.assertEquals("/", notRootResource.getParentDirectory());
+        Assertions.assertEquals("/Test2/Test21", notRootInSubfolder.getParentDirectory());
+        Assertions.assertEquals(null, notExistingNotRootResource.getParentDirectory());
+        Assertions.assertEquals("/Test1", umlauteExisting.getParentDirectory());
     }
 
     @Test
@@ -105,17 +111,11 @@ public class ResourceTest {
 
     @Test
     public void testGetContentType() {
-        Resource rootResource = Resource.createFromURI("/");
-        Assertions.assertEquals("text/html", rootResource.getContentType());
-        Resource existing = Resource.createFromURI("/Test1");
-        Assertions.assertEquals("text/html", existing.getContentType());
-        Resource fileInSubfolders = Resource.createFromURI("/Test2/Test21/subfolder.txt");
-        Assertions.assertEquals("text/plain", fileInSubfolders.getContentType());
-        Resource notExisting = Resource.createFromURI("/afeafeda/faef");
-        Assertions.assertEquals(null, notExisting.getContentType());
-        Resource umlaute = Resource.createFromURI("/Test1/umläute.txt");
-        Assertions.assertEquals("text/plain", umlaute.getContentType());
-        Resource rootHTML = Resource.createFromURI("/Test1/root.html");
-        Assertions.assertEquals("text/html", rootHTML.getContentType());
+        Assertions.assertEquals("text/html; charset=utf-8", rootResource.getContentType());
+        Assertions.assertEquals("text/html; charset=utf-8", notRootResource.getContentType());
+        Assertions.assertEquals("text/plain; charset=utf-8", notRootInSubfolder.getContentType());
+        Assertions.assertEquals(null, notExistingNotRootResource.getContentType());
+        Assertions.assertEquals("text/plain; charset=utf-8", umlauteExisting.getContentType());
+        Assertions.assertEquals("text/html; charset=utf-8", rootHTML.getContentType());
     }
 }

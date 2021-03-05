@@ -13,6 +13,7 @@ public class RequestResponseTest {
 
     private static Request getRootRequest;
     private static Request getFileRequest;
+    private static Request getFileRequestWithSpaces;
     private static Request getNotPresentRequest;
     private static Request headRequest;
     private static Request headRequestFile;
@@ -28,6 +29,7 @@ public class RequestResponseTest {
         try {
             getRootRequest = new Request(new ByteArrayInputStream("GET / HTTP/1.1".getBytes()));
             getFileRequest = new Request(new ByteArrayInputStream("GET /Test2/Test21/subfolder.txt HTTP/1.1".getBytes()));
+            getFileRequestWithSpaces = new Request(new ByteArrayInputStream("GET /Test2/File%20With%20Spaces.txt HTTP/1.1".getBytes()));
             getNotPresentRequest = new Request(new ByteArrayInputStream("GET /fileNotThere HTTP/1.1".getBytes()));
             headRequest = new Request(new ByteArrayInputStream("HEAD / HTTP/1.1".getBytes()));
             headRequestFile = new Request(new ByteArrayInputStream("HEAD /Test2/Test21/subfolder.txt HTTP/1.1".getBytes()));
@@ -48,6 +50,10 @@ public class RequestResponseTest {
         Assertions.assertEquals(HeaderFields.RequestMethod.GET, getFileRequest.getMethod());
         Assertions.assertEquals("/Test2/Test21/subfolder.txt", getFileRequest.getURI());
         Assertions.assertEquals("HTTP/1.1", getFileRequest.getVersion());
+
+        Assertions.assertEquals(HeaderFields.RequestMethod.GET, getFileRequestWithSpaces.getMethod());
+        Assertions.assertEquals("/Test2/File%20With%20Spaces.txt", getFileRequestWithSpaces.getURI());
+        Assertions.assertEquals("HTTP/1.1", getFileRequestWithSpaces.getVersion());
 
         Assertions.assertEquals(HeaderFields.RequestMethod.GET, getNotPresentRequest.getMethod());
         Assertions.assertEquals("/fileNotThere", getNotPresentRequest.getURI());
@@ -94,6 +100,15 @@ public class RequestResponseTest {
         Assertions.assertTrue(getFileResponse.getHeaderLine(HeaderFields.Field.SERVER).isPresent());
         Assertions.assertEquals("Server: " + HTTPServer.getServerInfo(), getFileResponse.getHeaderLine(HeaderFields.Field.SERVER).get());
         Assertions.assertArrayEquals("Subfolder\n".getBytes(), getFileResponse.getData());
+
+        Response getFileResponseWithSpaces = new ResponseBuilder(getFileRequestWithSpaces).build();
+        Assertions.assertTrue(getFileResponseWithSpaces.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());
+        Assertions.assertEquals("Content-Type: text/plain", getFileResponseWithSpaces.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).get());
+        Assertions.assertTrue(getFileResponseWithSpaces.getHeaderLine(HeaderFields.Field.CONTENT_LENGTH).isPresent());
+        Assertions.assertEquals("Content-Length: 12", getFileResponseWithSpaces.getHeaderLine(HeaderFields.Field.CONTENT_LENGTH).get());
+        Assertions.assertTrue(getFileResponseWithSpaces.getHeaderLine(HeaderFields.Field.SERVER).isPresent());
+        Assertions.assertEquals("Server: " + HTTPServer.getServerInfo(), getFileResponseWithSpaces.getHeaderLine(HeaderFields.Field.SERVER).get());
+        Assertions.assertArrayEquals("With Spaces\n".getBytes(), getFileResponseWithSpaces.getData());
 
         Response headResponse = new ResponseBuilder(headRequest).build();
         Assertions.assertTrue(headResponse.getHeaderLine(HeaderFields.Field.CONTENT_TYPE).isPresent());

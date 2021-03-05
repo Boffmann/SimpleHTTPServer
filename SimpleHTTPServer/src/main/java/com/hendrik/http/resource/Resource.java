@@ -30,7 +30,9 @@ public abstract class Resource {
             return new WallResource();
         }
 
-        String absolutePath = HTTPServer.getRootDirectory() + uri;
+        String uriSpaces = uri.replace("%20", " ");
+
+        String absolutePath = HTTPServer.getRootDirectory() + uriSpaces;
 
         File file = new File(absolutePath);
 

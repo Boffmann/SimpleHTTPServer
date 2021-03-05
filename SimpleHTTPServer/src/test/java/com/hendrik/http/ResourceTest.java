@@ -1,45 +1,13 @@
 package com.hendrik.http;
 
-import java.io.File;
 import java.io.IOException;
-
-import javax.management.InvalidAttributeValueException;
 
 import com.hendrik.http.resource.Resource;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class ResourceTest {
-
-    /**
-     * This HTTP Server is only used to set the root directory
-     */
-    private static HTTPServer server;
-
-    /**
-     * Path into the test directory
-     */
-    private static String testDirPath;
-
-    /**
-     * Sets up a new HTTP server with root directory in test folder.
-     * This should not start the server, though
-     */
-    @BeforeAll
-    public static void setUp() {
-
-        File workingDir = new File(System.getProperty("user.dir"));
-        File testDir = new File(workingDir.getParent() + "/Test");
-        testDirPath = testDir.getAbsolutePath();
-
-        try {
-            server = new HTTPServer(8080, testDirPath);
-        } catch (InvalidAttributeValueException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test
     public void testIsRoot() {
